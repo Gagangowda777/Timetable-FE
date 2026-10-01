@@ -1,3 +1,7 @@
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL !== undefined
+  ? import.meta.env.VITE_API_BASE_URL
+  : 'https://timetable-be.onrender.com').replace(/\/$/, '')
+
 const TOKEN_KEY = 'timetable-access-token'
 
 export function getAuthToken() {
@@ -22,7 +26,11 @@ export async function apiRequest(path, { method = 'GET', body } = {}) {
   if (token) headers.set('Authorization', `Bearer ${token}`)
   if (body !== undefined) headers.set('Content-Type', 'application/json')
 
-  const response = await fetch(`/api${path}`, {
+  const url = path.startsWith('http')
+    ? path
+    : `${API_BASE_URL}/api${path.startsWith('/') ? '' : '/'}${path}`
+
+  const response = await fetch(url, {
     method,
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
