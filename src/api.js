@@ -1,6 +1,6 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL !== undefined
   ? import.meta.env.VITE_API_BASE_URL
-  : 'https://timetable-be.onrender.com').replace(/\/$/, '')
+  : '').replace(/\/$/, '')
 
 const TOKEN_KEY = 'timetable-access-token'
 
