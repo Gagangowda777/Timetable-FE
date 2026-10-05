@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { apiRequest } from '../api.js'
 import './DashboardPage.css'
 
@@ -308,7 +309,7 @@ function DashboardPage({ session, onSignOut }) {
             </div>
           </div>
 
-          {selectedDetail && (
+          {selectedDetail && createPortal(
             <div className="detail-overlay" role="dialog" aria-modal="true" aria-label="Class details" onClick={(e) => { if (e.target === e.currentTarget) setSelectedDetail(null) }}>
               <div className="detail-panel">
                 <button type="button" className="detail-close" aria-label="Close details" onClick={() => setSelectedDetail(null)}>✕</button>
@@ -358,7 +359,8 @@ function DashboardPage({ session, onSignOut }) {
                   </>
                 )}
               </div>
-            </div>
+            </div>,
+            document.body
           )}
         </section>}
 
