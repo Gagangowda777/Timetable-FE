@@ -1606,45 +1606,6 @@
   }
 }
 
-/* Workload status badge — these classes were rendered but never styled */
-.faculty-workload .workload-status {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 999px;
-  background: #f1f5f9;
-  color: #334155;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.faculty-workload .workload-status.workload-normal {
-  border-color: #a7f3d0;
-  background: #ecfdf5;
-  color: #047857;
-}
-
-.faculty-workload .workload-status.workload-high {
-  border-color: #fde68a;
-  background: #fffbeb;
-  color: #b45309;
-}
-
-.faculty-workload .workload-status.workload-overloaded {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #b91c1c;
-}
-
-.faculty-workload .workload-status.workload-under-utilized {
-  border-color: #bfdbfe;
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
 .workload-loading {
   margin: 0;
   color: var(--text-muted);

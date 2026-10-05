@@ -232,9 +232,7 @@ function DashboardPage({ session, onSignOut }) {
 
         {isFaculty && (
           <section className="faculty-workload" aria-labelledby="faculty-workload-heading">
-            <div className="faculty-workload-heading"><div><p className="section-kicker">PUBLISHED TIMETABLE</p><h2 id="faculty-workload-heading">Your workload</h2></div>
-              {facultyWorkload && <span className={`workload-status workload-${facultyWorkload.workloadStatus.toLowerCase().replaceAll(' ', '-')}`}>{facultyWorkload.workloadStatus}</span>}
-            </div>
+            <div className="faculty-workload-heading"><div><p className="section-kicker">PUBLISHED TIMETABLE</p><h2 id="faculty-workload-heading">Your workload</h2></div></div>
             {facultyWorkloadError && <p className="notification-error" role="alert">{facultyWorkloadError}</p>}
             {facultyWorkload ? <>
               <div className="faculty-workload-metrics">
