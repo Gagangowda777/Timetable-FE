@@ -997,176 +997,236 @@
   font-weight: 400;
 }
 
-.faculty-change-section {
-  margin-bottom: 28px;
-  padding: 18px;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 4px;
-  background: #fffefa;
+/* Faculty request forms styled after Google Forms.
+   Scoped via .dashboard-content + !important to override the global
+   reference theme in ReferenceDashboard.css. */
+.dashboard-content .faculty-change-section {
+  max-width: 760px;
+  margin: 0 auto 28px !important;
+  padding: 0 !important;
+  border: 1px solid #dadce0 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.15) !important;
+  backdrop-filter: none;
+  overflow: hidden;
 }
 
-.faculty-change-section > .section-heading {
-  margin-bottom: 14px;
+.dashboard-content .faculty-change-section > .section-heading {
+  margin: 0 !important;
+  padding: 22px 24px 20px !important;
+  border-bottom: 0 !important;
+  background: #673ab7 !important;
 }
 
-.faculty-change-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+.dashboard-content .faculty-change-section .section-kicker {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.12em !important;
 }
 
-.faculty-change-form label {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 6px;
-  color: #526258;
-  font-size: 10px;
-  font-weight: 700;
+.dashboard-content .faculty-change-section .section-heading h2 {
+  margin: 6px 0 0 !important;
+  color: #ffffff !important;
+  font-family: inherit !important;
+  font-size: 24px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
 }
 
-.faculty-change-form label:first-child,
-.faculty-change-form label:nth-child(2),
-.faculty-change-form button {
-  grid-column: 1 / -1;
-}
-
-.faculty-change-form select,
-.faculty-change-form textarea {
-  width: 100%;
-  min-height: 38px;
-  padding: 9px 10px;
-  border: 1px solid #d5ddd4;
-  border-radius: 3px;
-  color: #29483a;
-  background: #fffefa;
-  font: inherit;
-  font-size: 11px;
-}
-
-.faculty-change-form textarea {
-  min-height: 66px;
-  resize: vertical;
-}
-
-.faculty-change-form button {
-  justify-self: start;
-}
-
-.faculty-change-form button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
+.faculty-change-form,
 .faculty-leave-form {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
+  padding: 20px 24px;
 }
 
-.faculty-leave-form label {
+.dashboard-content .faculty-change-form label,
+.dashboard-content .faculty-leave-form label {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 6px;
-  color: #526258;
-  font-size: 10px;
-  font-weight: 700;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #202124;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.faculty-leave-form label:nth-child(4),
-.faculty-leave-form button {
-  grid-column: 1 / -1;
+.dashboard-content .faculty-change-form label:focus-within,
+.dashboard-content .faculty-leave-form label:focus-within {
+  border-color: #673ab7;
+  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.12);
 }
 
-.faculty-leave-form select,
-.faculty-leave-form input,
-.faculty-leave-form textarea {
+.request-field-label {
+  display: inline-block;
+  color: #202124;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.request-required {
+  margin-left: 3px;
+  color: #d93025;
+  font-weight: 500;
+}
+
+.dashboard-content .faculty-change-form select,
+.dashboard-content .faculty-change-form textarea,
+.dashboard-content .faculty-leave-form select,
+.dashboard-content .faculty-leave-form input,
+.dashboard-content .faculty-leave-form textarea {
   width: 100%;
-  min-height: 38px;
-  padding: 9px 10px;
-  border: 1px solid #d5ddd4;
-  border-radius: 3px;
-  color: #29483a;
-  background: #fffefa;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid #dadce0 !important;
+  border-radius: 4px !important;
+  color: #202124 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
 }
 
-.faculty-leave-form textarea {
-  min-height: 66px;
+.dashboard-content .faculty-change-form select:focus,
+.dashboard-content .faculty-change-form textarea:focus,
+.dashboard-content .faculty-leave-form select:focus,
+.dashboard-content .faculty-leave-form input:focus,
+.dashboard-content .faculty-leave-form textarea:focus {
+  outline: none;
+  border-color: #673ab7 !important;
+  box-shadow: 0 0 0 1px #673ab7 !important;
+}
+
+.dashboard-content .faculty-change-form textarea,
+.dashboard-content .faculty-leave-form textarea {
+  min-height: 84px;
   resize: vertical;
 }
 
-.faculty-leave-form button {
+.dashboard-content .faculty-change-form button,
+.dashboard-content .faculty-leave-form button {
   justify-self: start;
+  min-height: 40px;
+  padding: 10px 24px;
+  border: 0 !important;
+  border-radius: 4px !important;
+  background: #673ab7 !important;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  cursor: pointer;
 }
 
-.faculty-leave-form button:disabled {
+.dashboard-content .faculty-change-form button:hover:not(:disabled),
+.dashboard-content .faculty-leave-form button:hover:not(:disabled) {
+  background: #5e35b1 !important;
+}
+
+.dashboard-content .faculty-change-form button:disabled,
+.dashboard-content .faculty-leave-form button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  background: #c5b6e0 !important;
 }
 
-.change-request-notice {
-  margin: 0 0 12px;
-  color: #36563f;
-  font-size: 11px;
+.dashboard-content .faculty-change-section > .notification-error,
+.dashboard-content .faculty-change-section > .change-request-notice {
+  margin: 0 !important;
+  padding: 16px 24px 0 !important;
+  font-size: 13px !important;
 }
 
-.faculty-request-list {
-  margin-top: 18px;
-  border-top: 1px solid var(--dashboard-line);
+.dashboard-content .faculty-change-section > .notification-error {
+  color: #c5221f !important;
 }
 
-.faculty-request-list h3 {
-  margin: 13px 0 3px;
-  color: var(--dashboard-ink);
-  font-size: 11px;
+.dashboard-content .faculty-change-section > .change-request-notice {
+  color: #137333 !important;
 }
 
-.faculty-request-item {
+.dashboard-content .faculty-request-list {
+  margin: 0;
+  padding: 0 24px 24px;
+  border-top: 1px solid #dadce0 !important;
+}
+
+.dashboard-content .faculty-request-list h3 {
+  margin: 18px 0 12px !important;
+  color: #202124 !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+}
+
+.dashboard-content .faculty-request-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 11px 0;
-  border-bottom: 1px solid #edf0eb;
+  margin-bottom: 10px;
+  padding: 14px 16px;
+  border: 1px solid #dadce0 !important;
+  border-radius: 8px !important;
+  background: #f8f9fa !important;
 }
 
-.faculty-request-item strong {
-  color: var(--dashboard-ink);
-  font-size: 11px;
+.dashboard-content .faculty-request-item:last-child {
+  margin-bottom: 0;
 }
 
-.faculty-request-item p,
-.faculty-request-item small {
+.dashboard-content .faculty-request-item strong {
+  color: #202124 !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dashboard-content .faculty-request-item p,
+.dashboard-content .faculty-request-item small {
   display: block;
-  margin: 3px 0 0;
-  color: var(--dashboard-muted);
-  font-size: 10px;
+  margin: 4px 0 0;
+  color: #5f6368 !important;
+  font-size: 12px !important;
 }
 
-.request-status {
+.dashboard-content .faculty-change-section .request-status {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  padding: 4px 7px;
-  border-radius: 2px;
-  color: #786440;
-  background: #f5efdc;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid #fbbc04 !important;
+  border-radius: 999px !important;
+  color: #b06000 !important;
+  background: #fef7e0 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
 }
 
-.request-status.is-approved {
-  color: #3c694b;
-  background: #e8f1e6;
+.dashboard-content .faculty-change-section .request-status.is-approved {
+  border-color: #34a853 !important;
+  color: #137333 !important;
+  background: #e6f4ea !important;
 }
 
-.request-status.is-declined {
-  color: #96553f;
-  background: #f4e6dc;
+.dashboard-content .faculty-change-section .request-status.is-declined {
+  border-color: #ea4335 !important;
+  color: #c5221f !important;
+  background: #fce8e6 !important;
 }
 
 .notification-section {
@@ -1436,26 +1496,22 @@
     font-size: 19px;
   }
 
-  .faculty-change-section {
-    padding: 14px;
+  .dashboard-content .faculty-change-section > .section-heading {
+    padding: 18px 18px 16px !important;
   }
 
-  .faculty-change-form {
-    grid-template-columns: 1fr;
+  .dashboard-content .faculty-change-form,
+  .dashboard-content .faculty-leave-form {
+    padding: 16px 18px;
   }
 
-  .faculty-change-form label,
-  .faculty-change-form button {
-    grid-column: auto;
+  .dashboard-content .faculty-change-section > .notification-error,
+  .dashboard-content .faculty-change-section > .change-request-notice {
+    padding: 14px 18px 0 !important;
   }
 
-  .faculty-leave-form {
-    grid-template-columns: 1fr;
-  }
-
-  .faculty-leave-form label,
-  .faculty-leave-form button {
-    grid-column: auto;
+  .dashboard-content .faculty-request-list {
+    padding: 0 18px 18px !important;
   }
 
   .notification-heading,

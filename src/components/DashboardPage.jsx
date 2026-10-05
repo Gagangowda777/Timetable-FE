@@ -432,15 +432,15 @@ function DashboardPage({ session, onSignOut }) {
             {changeRequestError && <p className="notification-error" role="alert">{changeRequestError}</p>}
             {changeRequestNotice && <p className="change-request-notice" role="status">{changeRequestNotice}</p>}
             <form className="faculty-change-form" onSubmit={submitChangeRequest}>
-              <label>Assigned class or lab
+              <label><span className="request-field-label">Assigned class or lab<span className="request-required" aria-hidden="true">*</span></span>
                 <select name="scheduleId" defaultValue={weeklyClasses[0]?.id ?? ''} required disabled={!weeklyClasses.length}>
                   {weeklyClasses.map((item) => <option key={item.id} value={item.id}>{item.course} · {item.code} · {item.day} {item.start}</option>)}
                 </select>
               </label>
-              <label>Requested change
+              <label><span className="request-field-label">Requested change<span className="request-required" aria-hidden="true">*</span></span>
                 <textarea name="proposedChange" rows="2" maxLength="1000" placeholder="Describe the timetable change you need" required />
               </label>
-              <label>Reason
+              <label><span className="request-field-label">Reason<span className="request-required" aria-hidden="true">*</span></span>
                 <textarea name="reason" rows="2" maxLength="1000" placeholder="Explain why this change is needed" required />
               </label>
               <button className="sign-out-button" type="submit" disabled={submittingChangeRequest || !weeklyClasses.length}>
@@ -467,7 +467,7 @@ function DashboardPage({ session, onSignOut }) {
             {leaveRequestError && <p className="notification-error" role="alert">{leaveRequestError}</p>}
             {leaveRequestNotice && <p className="change-request-notice" role="status">{leaveRequestNotice}</p>}
             <form className="faculty-leave-form" onSubmit={submitLeaveRequest}>
-              <label>Leave type
+              <label><span className="request-field-label">Leave type<span className="request-required" aria-hidden="true">*</span></span>
                 <select name="leaveType" defaultValue="Casual Leave" required>
                   <option>Casual Leave</option>
                   <option>Sick Leave</option>
@@ -475,13 +475,13 @@ function DashboardPage({ session, onSignOut }) {
                   <option>Other</option>
                 </select>
               </label>
-              <label>From date
+              <label><span className="request-field-label">From date<span className="request-required" aria-hidden="true">*</span></span>
                 <input type="date" name="startDate" required />
               </label>
-              <label>To date
+              <label><span className="request-field-label">To date<span className="request-required" aria-hidden="true">*</span></span>
                 <input type="date" name="endDate" required />
               </label>
-              <label>Reason
+              <label><span className="request-field-label">Reason<span className="request-required" aria-hidden="true">*</span></span>
                 <textarea name="reason" rows="2" maxLength="1000" placeholder="Explain why you need this leave" required />
               </label>
               <button className="sign-out-button" type="submit" disabled={submittingLeaveRequest}>
