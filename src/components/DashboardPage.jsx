@@ -89,6 +89,23 @@ function DashboardPage({ session, onSignOut }) {
     return () => { active = false }
   }, [session.role, reloadKey])
 
+  useEffect(() => {
+    if (!selectedDetail) return undefined
+    const handleKeyDown = (event) => { if (event.key === 'Escape') setSelectedDetail(null) }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedDetail])
+
+  function selectSection(section) {
+    setActiveSection(section)
+    setSelectedDetail(null)
+  }
+
+  function changeWeek(updater) {
+    setWeekOffset(updater)
+    setSelectedDetail(null)
+  }
+
   async function submitChangeRequest(event) {
     event.preventDefault()
     const form = event.currentTarget
@@ -178,6 +195,8 @@ function DashboardPage({ session, onSignOut }) {
       </header>
 
       <div className="dashboard-content" id="dashboard">
+        {error && <p className="notification-error" role="alert">{error}</p>}
+
         <section className="dashboard-welcome">
           <div>
             <p className="dashboard-eyebrow">CAMPUS OVERVIEW <span>·</span> {roleLabel.toUpperCase()}</p>
@@ -263,10 +282,10 @@ function DashboardPage({ session, onSignOut }) {
         )}
 
         <nav className="timetable-tabs" aria-label="Timetable views">
-          <button type="button" className={activeSection === 'today' ? 'is-active' : ''} aria-current={activeSection === 'today' ? 'page' : undefined} onClick={() => setActiveSection('today')}>Today</button>
-          <button type="button" className={activeSection === 'week' ? 'is-active' : ''} aria-current={activeSection === 'week' ? 'page' : undefined} onClick={() => setActiveSection('week')}>Weekly timetable</button>
-          {isFaculty && <button type="button" className={activeSection === 'request' ? 'is-active' : ''} aria-current={activeSection === 'request' ? 'page' : undefined} onClick={() => setActiveSection('request')}>Request changes</button>}
-          {isFaculty && <button type="button" className={activeSection === 'leave' ? 'is-active' : ''} aria-current={activeSection === 'leave' ? 'page' : undefined} onClick={() => setActiveSection('leave')}>Request leave</button>}
+          <button type="button" className={activeSection === 'today' ? 'is-active' : ''} aria-current={activeSection === 'today' ? 'page' : undefined} onClick={() => selectSection('today')}>Today</button>
+          <button type="button" className={activeSection === 'week' ? 'is-active' : ''} aria-current={activeSection === 'week' ? 'page' : undefined} onClick={() => selectSection('week')}>Weekly timetable</button>
+          {isFaculty && <button type="button" className={activeSection === 'request' ? 'is-active' : ''} aria-current={activeSection === 'request' ? 'page' : undefined} onClick={() => selectSection('request')}>Request changes</button>}
+          {isFaculty && <button type="button" className={activeSection === 'leave' ? 'is-active' : ''} aria-current={activeSection === 'leave' ? 'page' : undefined} onClick={() => selectSection('leave')}>Request leave</button>}
         </nav>
 
         {activeSection === 'today' && <section className="today-section" aria-labelledby="today-heading">
@@ -281,7 +300,7 @@ function DashboardPage({ session, onSignOut }) {
           {todayClasses.length > 0 ? (
             <div className="today-list">
               {todayClasses.map((item) => (
-                <article className="today-class" key={item.code}>
+                <article className="today-class" key={`${item.code}-${item.start}`}>
                   <div className="class-time"><strong>{item.start}</strong><span>{item.end}</span></div>
                   <span className="class-color-bar" aria-hidden="true" />
                   <div className="class-main">
@@ -306,10 +325,10 @@ function DashboardPage({ session, onSignOut }) {
               <h2 id="week-heading">This week</h2>
             </div>
             <div className="week-controls">
-              <button type="button" aria-label="Previous week" onClick={() => setWeekOffset((offset) => offset - 1)}>&larr;</button>
+              <button type="button" aria-label="Previous week" onClick={() => changeWeek((offset) => offset - 1)}>&larr;</button>
               <span>{weekLabel}</span>
-              <button type="button" aria-label="Next week" onClick={() => setWeekOffset((offset) => offset + 1)}>&rarr;</button>
-              {weekOffset !== 0 && <button className="today-button" type="button" onClick={() => setWeekOffset(0)}>Today</button>}
+              <button type="button" aria-label="Next week" onClick={() => changeWeek((offset) => offset + 1)}>&rarr;</button>
+              {weekOffset !== 0 && <button className="today-button" type="button" onClick={() => changeWeek(0)}>Today</button>}
             </div>
           </div>
 
