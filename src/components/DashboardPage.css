@@ -1058,6 +1058,55 @@
   opacity: 0.55;
 }
 
+.faculty-leave-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.faculty-leave-form label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  color: #526258;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.faculty-leave-form label:nth-child(4),
+.faculty-leave-form button {
+  grid-column: 1 / -1;
+}
+
+.faculty-leave-form select,
+.faculty-leave-form input,
+.faculty-leave-form textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 10px;
+  border: 1px solid #d5ddd4;
+  border-radius: 3px;
+  color: #29483a;
+  background: #fffefa;
+  font: inherit;
+  font-size: 11px;
+}
+
+.faculty-leave-form textarea {
+  min-height: 66px;
+  resize: vertical;
+}
+
+.faculty-leave-form button {
+  justify-self: start;
+}
+
+.faculty-leave-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .change-request-notice {
   margin: 0 0 12px;
   color: #36563f;
@@ -1397,6 +1446,15 @@
 
   .faculty-change-form label,
   .faculty-change-form button {
+    grid-column: auto;
+  }
+
+  .faculty-leave-form {
+    grid-template-columns: 1fr;
+  }
+
+  .faculty-leave-form label,
+  .faculty-leave-form button {
     grid-column: auto;
   }
 

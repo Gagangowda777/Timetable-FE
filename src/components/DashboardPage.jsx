@@ -19,6 +19,10 @@ function DashboardPage({ session, onSignOut }) {
   const [facultyWorkload, setFacultyWorkload] = useState(null)
   const [facultyWorkloadError, setFacultyWorkloadError] = useState('')
   const [submittingChangeRequest, setSubmittingChangeRequest] = useState(false)
+  const [leaveRequests, setLeaveRequests] = useState([])
+  const [leaveRequestError, setLeaveRequestError] = useState('')
+  const [leaveRequestNotice, setLeaveRequestNotice] = useState('')
+  const [submittingLeaveRequest, setSubmittingLeaveRequest] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [reloadKey, setReloadKey] = useState(0)
@@ -70,6 +74,15 @@ function DashboardPage({ session, onSignOut }) {
   useEffect(() => {
     if (session.role !== 'faculty') return undefined
     let active = true
+    apiRequest('/dashboard/leave-requests')
+      .then((result) => { if (active) setLeaveRequests(result) })
+      .catch((requestError) => { if (active) setLeaveRequestError(requestError.message) })
+    return () => { active = false }
+  }, [session.role])
+
+  useEffect(() => {
+    if (session.role !== 'faculty') return undefined
+    let active = true
     apiRequest('/dashboard/workload')
       .then((result) => { if (active) { setFacultyWorkload(result); setFacultyWorkloadError('') } })
       .catch((requestError) => { if (active) setFacultyWorkloadError(requestError.message) })
@@ -99,6 +112,33 @@ function DashboardPage({ session, onSignOut }) {
       setChangeRequestError(requestError.message)
     } finally {
       setSubmittingChangeRequest(false)
+    }
+  }
+
+  async function submitLeaveRequest(event) {
+    event.preventDefault()
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    setSubmittingLeaveRequest(true)
+    setLeaveRequestError('')
+    setLeaveRequestNotice('')
+    try {
+      const created = await apiRequest('/dashboard/leave-requests', {
+        method: 'POST',
+        body: {
+          leaveType: formData.get('leaveType'),
+          startDate: formData.get('startDate'),
+          endDate: formData.get('endDate'),
+          reason: formData.get('reason'),
+        },
+      })
+      setLeaveRequests((requests) => [created, ...requests])
+      setLeaveRequestNotice('Your leave request was submitted for review.')
+      form.reset()
+    } catch (requestError) {
+      setLeaveRequestError(requestError.message)
+    } finally {
+      setSubmittingLeaveRequest(false)
     }
   }
 
@@ -226,6 +266,7 @@ function DashboardPage({ session, onSignOut }) {
           <button type="button" className={activeSection === 'today' ? 'is-active' : ''} aria-current={activeSection === 'today' ? 'page' : undefined} onClick={() => setActiveSection('today')}>Today</button>
           <button type="button" className={activeSection === 'week' ? 'is-active' : ''} aria-current={activeSection === 'week' ? 'page' : undefined} onClick={() => setActiveSection('week')}>Weekly timetable</button>
           {isFaculty && <button type="button" className={activeSection === 'request' ? 'is-active' : ''} aria-current={activeSection === 'request' ? 'page' : undefined} onClick={() => setActiveSection('request')}>Request changes</button>}
+          {isFaculty && <button type="button" className={activeSection === 'leave' ? 'is-active' : ''} aria-current={activeSection === 'leave' ? 'page' : undefined} onClick={() => setActiveSection('leave')}>Request leave</button>}
         </nav>
 
         {activeSection === 'today' && <section className="today-section" aria-labelledby="today-heading">
@@ -395,6 +436,51 @@ function DashboardPage({ session, onSignOut }) {
                   <span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span>
                 </article>
               )) : <p className="notification-empty">No timetable change requests yet.</p>}
+            </div>
+          </section>
+        )}
+
+        {activeSection === 'leave' && isFaculty && (
+          <section className="faculty-change-section" aria-labelledby="faculty-leave-heading">
+            <div className="section-heading">
+              <div><p className="section-kicker">LEAVE SUPPORT</p><h2 id="faculty-leave-heading">Request leave</h2></div>
+            </div>
+            {leaveRequestError && <p className="notification-error" role="alert">{leaveRequestError}</p>}
+            {leaveRequestNotice && <p className="change-request-notice" role="status">{leaveRequestNotice}</p>}
+            <form className="faculty-leave-form" onSubmit={submitLeaveRequest}>
+              <label>Leave type
+                <select name="leaveType" defaultValue="Casual Leave" required>
+                  <option>Casual Leave</option>
+                  <option>Sick Leave</option>
+                  <option>Earned Leave</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>From date
+                <input type="date" name="startDate" required />
+              </label>
+              <label>To date
+                <input type="date" name="endDate" required />
+              </label>
+              <label>Reason
+                <textarea name="reason" rows="2" maxLength="1000" placeholder="Explain why you need this leave" required />
+              </label>
+              <button className="sign-out-button" type="submit" disabled={submittingLeaveRequest}>
+                {submittingLeaveRequest ? 'Submitting...' : 'Submit leave request'}
+              </button>
+            </form>
+            <div className="faculty-request-list" aria-live="polite">
+              <h3>Your leave requests</h3>
+              {leaveRequests.length ? leaveRequests.map((item) => (
+                <article className="faculty-request-item" key={item.id}>
+                  <div>
+                    <strong>{item.leaveType}</strong>
+                    <p>{item.startDate} to {item.endDate} · {item.numberOfDays === 1 ? '1 day' : `${item.numberOfDays} days`}</p>
+                    <small>{item.reason}</small>
+                  </div>
+                  <span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span>
+                </article>
+              )) : <p className="notification-empty">No leave requests yet.</p>}
             </div>
           </section>
         )}
