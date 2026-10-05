@@ -21,6 +21,7 @@ function DashboardPage({ session, onSignOut }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [reloadKey, setReloadKey] = useState(0)
+  const [selectedDetail, setSelectedDetail] = useState(null) // { type: 'day'|'class', data }
 
   useEffect(() => {
     let active = true
@@ -179,10 +180,26 @@ function DashboardPage({ session, onSignOut }) {
               <div className="faculty-workload-metrics">
                 <article><span>WEEKLY HOURS</span><strong>{facultyWorkload.weeklyTeachingHours}</strong></article>
                 <article><span>CLASSES</span><strong>{facultyWorkload.numberOfClasses}</strong></article>
-                <article><span>MAXIMUM HOURS</span><strong>{facultyWorkload.maximumAllowedHours}</strong></article>
-                <article><span>UTILIZATION</span><strong>{facultyWorkload.utilizationPercentage}%</strong></article>
               </div>
-              <div className="faculty-daily-workload"><strong>Daily hours</strong>{facultyWorkload.dailyTeachingHours.map((day) => <span key={day.day}>{day.day.slice(0, 3)} <b>{day.hours}</b></span>)}</div>
+              <div className="faculty-daily-workload">
+                <strong className="daily-hours-label">Daily hours</strong>
+                <table className="daily-hours-table" aria-label="Daily teaching hours">
+                  <thead>
+                    <tr>
+                      {facultyWorkload.dailyTeachingHours.map((day) => (
+                        <th key={day.day} scope="col">{day.day.slice(0, 3)}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {facultyWorkload.dailyTeachingHours.map((day) => (
+                        <td key={day.day}>{day.hours}<span>h</span></td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </> : !facultyWorkloadError && <p className="workload-loading" role="status">Loading workload...</p>}
           </section>
         )}
@@ -260,18 +277,29 @@ function DashboardPage({ session, onSignOut }) {
                 const isToday = day.date === timetable.today.date
                 return (
                   <section className={`week-day${isToday ? ' is-today' : ''}`} key={day.date} aria-label={`${day.day} timetable`}>
-                    <div className="week-day-heading">
+                    <button
+                      type="button"
+                      className="week-day-heading week-day-heading-btn"
+                      aria-label={`View details for ${day.day}`}
+                      onClick={() => setSelectedDetail({ type: 'day', data: day })}
+                    >
                       <span>{day.day.slice(0, 3)}</span>
                       <strong>{new Date(`${day.date}T12:00:00`).getDate()}</strong>
-                    </div>
+                    </button>
                     <div className="week-day-classes">
                       {day.classes.length > 0 ? day.classes.map((item) => (
-                        <article className="week-class" key={item.code}>
+                        <button
+                          type="button"
+                          className="week-class week-class-btn"
+                          key={`${item.code}-${item.start}`}
+                          aria-label={`View details for ${item.course}`}
+                          onClick={() => setSelectedDetail({ type: 'class', data: item, day })}
+                        >
                           <time>{item.start}</time>
                           <strong>{item.course}</strong>
                           <span>{item.room}</span>
-                          <span>Instructor: {item.instructor || 'Not assigned'}</span>
-                        </article>
+                          <span>{isFaculty ? item.group || 'No group' : `Instructor: ${item.instructor || 'Not assigned'}`}</span>
+                        </button>
                       )) : <p className="week-empty">No classes</p>}
                     </div>
                   </section>
@@ -279,6 +307,59 @@ function DashboardPage({ session, onSignOut }) {
               })}
             </div>
           </div>
+
+          {selectedDetail && (
+            <div className="detail-overlay" role="dialog" aria-modal="true" aria-label="Class details" onClick={(e) => { if (e.target === e.currentTarget) setSelectedDetail(null) }}>
+              <div className="detail-panel">
+                <button type="button" className="detail-close" aria-label="Close details" onClick={() => setSelectedDetail(null)}>✕</button>
+
+                {selectedDetail.type === 'day' ? (
+                  <>
+                    <p className="detail-kicker">DAY OVERVIEW</p>
+                    <h3 className="detail-title">{selectedDetail.data.day}</h3>
+                    <p className="detail-date">{formatDate(new Date(`${selectedDetail.data.date}T12:00:00`), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                    <div className="detail-stat-row">
+                      <span className="detail-stat"><strong>{selectedDetail.data.classes.length}</strong><small>{selectedDetail.data.classes.length === 1 ? 'class' : 'classes'}</small></span>
+                    </div>
+                    {selectedDetail.data.classes.length > 0 ? (
+                      <ul className="detail-class-list">
+                        {selectedDetail.data.classes.map((item) => (
+                          <li key={`${item.code}-${item.start}`} className="detail-class-item">
+                            <span className="detail-class-time">{item.start} – {item.end}</span>
+                            <div>
+                              <strong>{item.course}</strong>
+                              <small>{item.code}</small>
+                            </div>
+                            <span className="detail-class-meta">{item.room}</span>
+                            <span className="detail-class-meta">{isFaculty ? (item.group || 'No group') : (item.instructor || 'No instructor')}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="detail-empty">No classes scheduled for this day.</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="detail-kicker">CLASS DETAILS</p>
+                    <h3 className="detail-title">{selectedDetail.data.course}</h3>
+                    <p className="detail-code">{selectedDetail.data.code}</p>
+                    <ul className="detail-info-list">
+                      <li><span>Day</span><strong>{selectedDetail.day?.day || '—'}</strong></li>
+                      <li><span>Time</span><strong>{selectedDetail.data.start} – {selectedDetail.data.end}</strong></li>
+                      <li><span>Room</span><strong>{selectedDetail.data.room || '—'}</strong></li>
+                      {isFaculty
+                        ? <li><span>Group</span><strong>{selectedDetail.data.group || '—'}</strong></li>
+                        : <li><span>Instructor</span><strong>{selectedDetail.data.instructor || 'Not assigned'}</strong></li>
+                      }
+                      {selectedDetail.data.type && <li><span>Type</span><strong>{selectedDetail.data.type}</strong></li>}
+                      {selectedDetail.data.status && <li><span>Status</span><strong>{selectedDetail.data.status}</strong></li>}
+                    </ul>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </section>}
 
         {activeSection === 'request' && isFaculty && (
