@@ -682,17 +682,28 @@ function AdminDashboardPage({ session, onSignOut }) {
                 <span>{daySlots.length} period{daySlots.length === 1 ? '' : 's'}{activeSlotDay === todayName ? ' · Today' : ''}</span>
                 {!workingDays.includes(activeSlotDay) && <em>Not a working day</em>}
               </header>
-              {daySlots.length ? daySlots.map((slot, slotIndex) => (
-                <div className={`time-slot-row${slot.status === 'Inactive' ? ' is-inactive' : ''}`} key={slot.id}>
-                  <strong className="time-slot-sequence">{String(slot.sequence).padStart(2, '0')}</strong>
-                  <label>Start<input aria-label={`${slot.day} slot ${slot.sequence} start time`} type="time" value={slot.start} onChange={(event) => updateTimeSlot(slot.id, 'start', event.target.value)} /></label>
-                  <label>End<input aria-label={`${slot.day} slot ${slot.sequence} end time`} type="time" value={slot.end} onChange={(event) => updateTimeSlot(slot.id, 'end', event.target.value)} /></label>
-                  <label>Type<select aria-label={`${slot.day} slot ${slot.sequence} type`} value={slot.type} onChange={(event) => updateTimeSlot(slot.id, 'type', event.target.value)}><option>CLASS</option><option>BREAK</option><option>LUNCH</option></select></label>
-                  <label>Status<select aria-label={`${slot.day} slot ${slot.sequence} status`} value={slot.status} onChange={(event) => updateTimeSlot(slot.id, 'status', event.target.value)}><option>Active</option><option>Inactive</option></select></label>
-                  <label>Move to day<select aria-label={`Move slot ${slot.sequence} to another day`} value={slot.day} onChange={(event) => moveSlotToDay(slot.id, event.target.value)}>{weekdays.map((dayOption) => <option key={dayOption}>{dayOption}</option>)}</select></label>
-                  <div className="time-slot-actions"><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} up`} title="Move up" disabled={slotIndex === 0} onClick={() => moveTimeSlot(slot.id, -1)}>↑</button><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} down`} title="Move down" disabled={slotIndex === daySlots.length - 1} onClick={() => moveTimeSlot(slot.id, 1)}>↓</button><button type="button" aria-label={`Remove ${slot.day} slot ${slot.sequence}`} title="Remove slot" onClick={() => removeTimeSlot(slot.id)}>×</button></div>
+              {daySlots.length ? (
+                <div className="slot-card-grid">
+                  {daySlots.map((slot, slotIndex) => (
+                    <article className={`slot-card slot-card--${slot.type.toLowerCase()}${slot.status === 'Inactive' ? ' is-inactive' : ''}`} key={slot.id}>
+                      <header className="slot-card-head">
+                        <span className="slot-card-index" aria-hidden="true">{String(slot.sequence).padStart(2, '0')}</span>
+                        <span className="slot-card-time">
+                          <input aria-label={`${slot.day} slot ${slot.sequence} start time`} type="time" value={slot.start} onChange={(event) => updateTimeSlot(slot.id, 'start', event.target.value)} />
+                          <em aria-hidden="true">–</em>
+                          <input aria-label={`${slot.day} slot ${slot.sequence} end time`} type="time" value={slot.end} onChange={(event) => updateTimeSlot(slot.id, 'end', event.target.value)} />
+                        </span>
+                        <div className="slot-card-actions"><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} up`} title="Move up" disabled={slotIndex === 0} onClick={() => moveTimeSlot(slot.id, -1)}>↑</button><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} down`} title="Move down" disabled={slotIndex === daySlots.length - 1} onClick={() => moveTimeSlot(slot.id, 1)}>↓</button><button type="button" aria-label={`Remove ${slot.day} slot ${slot.sequence}`} title="Remove slot" onClick={() => removeTimeSlot(slot.id)}>×</button></div>
+                      </header>
+                      <div className="slot-card-meta">
+                        <label className="slot-card-field slot-card-type"><span>Type</span><select aria-label={`${slot.day} slot ${slot.sequence} type`} value={slot.type} onChange={(event) => updateTimeSlot(slot.id, 'type', event.target.value)}><option>CLASS</option><option>BREAK</option><option>LUNCH</option></select></label>
+                        <label className="slot-card-field slot-card-status"><span>Status</span><select aria-label={`${slot.day} slot ${slot.sequence} status`} value={slot.status} onChange={(event) => updateTimeSlot(slot.id, 'status', event.target.value)}><option>Active</option><option>Inactive</option></select></label>
+                        <label className="slot-card-field slot-card-move"><span>Day</span><select aria-label={`Move slot ${slot.sequence} to another day`} value={slot.day} onChange={(event) => moveSlotToDay(slot.id, event.target.value)}>{weekdays.map((dayOption) => <option key={dayOption} value={dayOption}>{dayOption.slice(0, 3)}</option>)}</select></label>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-              )) : (
+              ) : (
                 <div className="slot-day-empty">
                   <p>No time slots on {activeSlotDay} yet.</p>
                   <button className="admin-secondary-button" type="button" onClick={() => addTimeSlot(activeSlotDay)}>Add the first slot</button>
