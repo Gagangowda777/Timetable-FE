@@ -257,11 +257,14 @@ body:has(.dashboard-page) .bg-orb {
   width: 314px;
   max-height: calc(100svh - 340px);
   flex-direction: column;
+  flex-wrap: nowrap;
   gap: 8px !important;
   margin: 0 !important;
   padding: 0 !important;
+  overflow-x: hidden;
   overflow-y: auto;
   border: 0 !important;
+  scrollbar-width: thin;
 }
 
 .timetable-tabs button,
@@ -785,6 +788,7 @@ body:has(.dashboard-page) .bg-orb {
     width: auto;
     max-height: none;
     flex-direction: row;
+    flex-wrap: wrap;
     margin: 0 18px 20px !important;
     padding-bottom: 2px !important;
     overflow-x: auto;

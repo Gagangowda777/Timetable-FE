@@ -62,7 +62,7 @@ function AdminDashboardPage({ session, onSignOut }) {
   }, [reloadKey])
 
   useEffect(() => {
-    if (activeView !== 'workload') return undefined
+    if (activeView !== 'faculty-workload') return undefined
     let active = true
     apiRequest('/admin/faculty-workload')
       .then((result) => { if (active) { setWorkloadReport(result); setWorkloadError('') } })
