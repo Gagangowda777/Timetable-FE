@@ -1300,3 +1300,411 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Overview & timetable polish: toolbar, week board, KPI cards ---------- */
+
+.admin-metrics article.is-interactive {
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 0.16s ease;
+}
+
+.admin-metrics article.is-interactive::after {
+  content: '';
+  position: absolute;
+  right: 25px;
+  bottom: 0;
+  left: 25px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.18s ease;
+}
+
+.admin-metrics article.is-interactive:hover,
+.admin-metrics article.is-interactive:focus-visible {
+  box-shadow: inset 0 0 0 1px rgba(45, 99, 233, 0.18);
+}
+
+.admin-metrics article.is-interactive:hover::after,
+.admin-metrics article.is-interactive:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.admin-metrics article.is-interactive:focus-visible {
+  outline: 2px solid rgba(45, 99, 233, 0.55);
+  outline-offset: -2px;
+}
+
+.admin-metric-arrow {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-style: normal;
+  opacity: 0.65;
+  transition: transform 0.16s ease;
+}
+
+.admin-metrics article.is-interactive:hover .admin-metric-arrow {
+  transform: translateX(3px);
+}
+
+.schedule-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem 1rem;
+  padding: 13px 26px;
+  border-bottom: 1px solid var(--reference-line);
+  background: var(--reference-soft);
+}
+
+.schedule-day-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.schedule-day-chips button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--reference-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--reference-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.schedule-day-chips button:hover {
+  border-color: #bfd4ff;
+  background: #f4f8ff;
+  color: var(--reference-blue-dark);
+}
+
+.schedule-day-chips button.is-active {
+  border-color: var(--reference-blue);
+  background: var(--reference-blue);
+  color: #fff;
+}
+
+.schedule-day-chips .today-dot {
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.schedule-day-chips button.is-active .today-dot {
+  background: #a7f3d0;
+}
+
+.schedule-toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.schedule-toolbar-controls select,
+.schedule-search {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid #d7e2ee;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--reference-ink);
+  font-family: inherit;
+  font-size: 0.74rem;
+}
+
+.schedule-search {
+  width: min(240px, 100%);
+}
+
+.schedule-toolbar-controls select:focus,
+.schedule-search:focus {
+  border-color: var(--reference-blue) !important;
+  box-shadow: 0 0 0 3px rgba(45, 99, 233, 0.14) !important;
+  outline: none;
+}
+
+.schedule-view-toggle {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--reference-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.schedule-view-toggle button {
+  min-height: 28px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--reference-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.schedule-view-toggle button:hover {
+  background: #f4f8ff;
+  color: var(--reference-blue-dark);
+}
+
+.schedule-view-toggle button.is-active {
+  background: var(--reference-blue);
+  color: #fff;
+}
+
+.schedule-result-count {
+  color: var(--reference-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.schedule-board-scroll {
+  overflow-x: auto;
+  padding: 20px 26px 24px;
+}
+
+.schedule-board {
+  display: grid;
+  gap: 12px;
+}
+
+.schedule-board-day {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--reference-line);
+  border-radius: 10px;
+  background: var(--reference-soft);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.schedule-board-day.is-today {
+  border-color: #b9cdff;
+  background: #f4f8ff;
+  box-shadow: 0 8px 20px rgba(45, 99, 233, 0.1);
+}
+
+.schedule-board-day-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--reference-line);
+  background: #fff;
+}
+
+.schedule-board-day-heading strong {
+  color: var(--reference-ink);
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+
+.schedule-board-day.is-today .schedule-board-day-heading strong {
+  color: var(--reference-blue-dark);
+}
+
+.schedule-board-day-heading span {
+  color: var(--reference-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.schedule-board-items {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 9px;
+  padding: 11px;
+}
+
+.schedule-board-card {
+  padding: 11px 12px;
+  border: 1px solid var(--reference-line);
+  border-left: 3px solid var(--reference-blue);
+  border-radius: 8px;
+  background: #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.schedule-board-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 36, 68, 0.1);
+}
+
+.schedule-board-card-time {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 6px;
+  color: var(--reference-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.schedule-board-card-time strong {
+  color: var(--reference-ink);
+  font-size: 0.72rem;
+}
+
+.schedule-board-card-body strong {
+  display: block;
+  color: var(--reference-ink);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.schedule-board-card-meta {
+  display: block;
+  margin-top: 3px;
+  color: var(--reference-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.schedule-board-card-body small {
+  display: block;
+  margin-top: 5px;
+  color: var(--reference-muted);
+  font-size: 0.68rem;
+}
+
+.schedule-board-card-status {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--reference-blue-dark);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.schedule-board-card--published {
+  border-left-color: #10b981;
+}
+
+.schedule-board-card--published .schedule-board-card-status {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.schedule-board-card--approved {
+  border-left-color: #2d63e9;
+}
+
+.schedule-board-card--approved .schedule-board-card-status {
+  background: #eff5ff;
+  color: #174ac8;
+}
+
+.schedule-board-card--pending {
+  border-left-color: #f59e0b;
+}
+
+.schedule-board-card--pending .schedule-board-card-status {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.schedule-board-card--rejected {
+  border-left-color: #ef4444;
+}
+
+.schedule-board-card--rejected .schedule-board-card-status {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.schedule-board-card--draft {
+  border-left-color: #94a3b8;
+}
+
+.schedule-board-card--draft .schedule-board-card-status {
+  background: rgba(148, 163, 184, 0.16);
+  color: #475569;
+}
+
+.schedule-board-empty {
+  padding: 16px 10px;
+  border: 1px dashed var(--reference-line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--reference-muted);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.admin-table tbody tr {
+  transition: background-color 0.14s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.admin-table tbody tr.schedule-row-today {
+  background: #f4f8ff;
+}
+
+.schedule-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.schedule-empty button {
+  border: 0;
+  background: transparent;
+  color: var(--reference-blue);
+  font-size: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 980px) {
+  .schedule-toolbar,
+  .schedule-board-scroll {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+}
+
+@media (max-width: 720px) {
+  .schedule-toolbar-controls {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .schedule-search {
+    width: 100%;
+  }
+}

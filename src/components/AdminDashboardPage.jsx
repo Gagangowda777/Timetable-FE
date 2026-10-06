@@ -20,6 +20,10 @@ function AdminDashboardPage({ session, onSignOut }) {
   const [rooms, setRooms] = useState([])
   const [departmentId] = useState(session.departmentId)
   const [scheduleFilter, setScheduleFilter] = useState('All departments')
+  const [scheduleView, setScheduleView] = useState('board')
+  const [scheduleDay, setScheduleDay] = useState('All')
+  const [scheduleStatus, setScheduleStatus] = useState('All')
+  const [scheduleQuery, setScheduleQuery] = useState('')
   const [schedules, setSchedules] = useState([])
   const [faculty, setFaculty] = useState([])
   const [workloadReport, setWorkloadReport] = useState(null)
@@ -90,6 +94,21 @@ function AdminDashboardPage({ session, onSignOut }) {
   const openConflicts = visibleConflicts.filter((item) => item.status === 'Open')
   const pendingChangeRequests = changeRequests.filter((item) => item.status === 'Pending')
   const visibleFaculty = faculty.filter((item) => isAcademicAdmin || item.department === department)
+  const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' })
+  const filteredSchedules = visibleSchedules.filter((item) => {
+    if (scheduleDay !== 'All' && item.day !== scheduleDay) return false
+    if (scheduleStatus !== 'All' && item.status !== scheduleStatus) return false
+    const query = scheduleQuery.trim().toLowerCase()
+    if (query) {
+      const haystack = [item.subject, item.code, item.faculty, item.room, item.department, item.day, item.status]
+        .filter(Boolean).join(' ').toLowerCase()
+      if (!haystack.includes(query)) return false
+    }
+    return true
+  })
+  const scheduleStatusOptions = [...new Set(visibleSchedules.map((item) => item.status))].sort()
+  const boardDays = weekdays.filter((day) => workingDays.includes(day))
+  const scheduleFiltersActive = scheduleDay !== 'All' || scheduleStatus !== 'All' || scheduleQuery.trim() !== ''
 
   async function updateScheduleStatus(ids, status, details = {}) {
     setApprovalConflicts([])
@@ -258,7 +277,103 @@ function AdminDashboardPage({ session, onSignOut }) {
     }
   }
 
+  function resetScheduleFilters() {
+    setScheduleDay('All')
+    setScheduleStatus('All')
+    setScheduleQuery('')
+  }
+
+  function renderScheduleEmpty(message) {
+    return (
+      <div className="admin-empty-state schedule-empty" role="status">
+        <span>{message}</span>
+        {scheduleFiltersActive && <button type="button" onClick={resetScheduleFilters}>Clear filters</button>}
+      </div>
+    )
+  }
+
+  function renderScheduleToolbar({ search = true, status = false, view = false } = {}) {
+    return (
+      <div className="schedule-toolbar">
+        <div className="schedule-day-chips" role="group" aria-label="Filter schedules by day">
+          <button type="button" className={scheduleDay === 'All' ? 'is-active' : ''} aria-pressed={scheduleDay === 'All'} onClick={() => setScheduleDay('All')}>All days</button>
+          {boardDays.map((day) => (
+            <button type="button" key={day} className={scheduleDay === day ? 'is-active' : ''} aria-pressed={scheduleDay === day} onClick={() => setScheduleDay(day)}>
+              {day.slice(0, 3)}{day === todayName && <i className="today-dot" aria-hidden="true" title="Today" />}
+            </button>
+          ))}
+        </div>
+        <div className="schedule-toolbar-controls">
+          {status && (
+            <select aria-label="Filter schedules by status" value={scheduleStatus} onChange={(event) => setScheduleStatus(event.target.value)}>
+              <option value="All">All statuses</option>
+              {scheduleStatusOptions.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+          )}
+          {search && (
+            <input className="schedule-search" type="search" aria-label="Search schedules" placeholder="Search subject, faculty, room..." value={scheduleQuery} onChange={(event) => setScheduleQuery(event.target.value)} />
+          )}
+          {view && (
+            <div className="schedule-view-toggle" role="group" aria-label="Timetable view">
+              <button type="button" className={scheduleView === 'board' ? 'is-active' : ''} aria-pressed={scheduleView === 'board'} onClick={() => setScheduleView('board')}>Week</button>
+              <button type="button" className={scheduleView === 'list' ? 'is-active' : ''} aria-pressed={scheduleView === 'list'} onClick={() => setScheduleView('list')}>List</button>
+            </div>
+          )}
+          <span className="schedule-result-count">{filteredSchedules.length} of {visibleSchedules.length} classes</span>
+        </div>
+      </div>
+    )
+  }
+
+  function scheduleStatusTone(status) {
+    if (status === 'Published') return 'published'
+    if (status === 'Approved') return 'approved'
+    if (status === 'Rejected') return 'rejected'
+    if (status === 'Draft') return 'draft'
+    return 'pending'
+  }
+
+  function renderScheduleBoard() {
+    if (!filteredSchedules.length) return renderScheduleEmpty(visibleSchedules.length ? 'No classes match the current filters.' : 'No schedules have been created yet.')
+    return (
+      <div className="schedule-board-scroll">
+        <div
+          className="schedule-board"
+          style={{ gridTemplateColumns: `repeat(${boardDays.length}, minmax(190px, 1fr))`, minWidth: `${boardDays.length * 202}px` }}
+        >
+          {boardDays.map((day) => {
+            const dayItems = filteredSchedules.filter((item) => item.day === day)
+              .sort((left, right) => left.start.localeCompare(right.start))
+            const isToday = day === todayName
+            return (
+              <section className={`schedule-board-day${isToday ? ' is-today' : ''}`} key={day} aria-label={day}>
+                <header className="schedule-board-day-heading">
+                  <strong>{day}</strong>
+                  <span>{dayItems.length} {dayItems.length === 1 ? 'class' : 'classes'}{isToday ? ' · Today' : ''}</span>
+                </header>
+                <div className="schedule-board-items">
+                  {dayItems.length ? dayItems.map((item) => (
+                    <article className={`schedule-board-card schedule-board-card--${scheduleStatusTone(item.status)}`} key={item.id}>
+                      <div className="schedule-board-card-time"><strong>{item.start}</strong><span>–{item.end}</span></div>
+                      <div className="schedule-board-card-body">
+                        <strong>{item.subject}</strong>
+                        <span className="schedule-board-card-meta">{item.code}{isAcademicAdmin && item.department ? ` · ${item.department}` : ''}</span>
+                        <small>{item.faculty} · {item.room}</small>
+                      </div>
+                      <span className="schedule-board-card-status">{item.status}</span>
+                    </article>
+                  )) : <p className="schedule-board-empty">{scheduleFiltersActive ? 'No matching classes' : 'No classes scheduled'}</p>}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   function renderScheduleTable() {
+    if (!filteredSchedules.length) return renderScheduleEmpty(visibleSchedules.length ? 'No classes match the current filters.' : 'No schedules have been created yet.')
     return (
       <div className="admin-table-scroll">
         <table className="admin-table">
@@ -273,8 +388,8 @@ function AdminDashboardPage({ session, onSignOut }) {
             </tr>
           </thead>
           <tbody>
-            {visibleSchedules.map((item) => (
-              <tr key={item.id}>
+            {filteredSchedules.map((item) => (
+              <tr key={item.id} className={item.day === todayName ? 'schedule-row-today' : ''}>
                 <td><strong>{item.day}</strong><span>{item.start}–{item.end}</span></td>
                 <td><strong>{item.subject}</strong><span>{item.code}</span></td>
                 {isAcademicAdmin && <td>{item.department}</td>}
@@ -290,19 +405,47 @@ function AdminDashboardPage({ session, onSignOut }) {
   }
 
   function renderOverview() {
+    const metrics = [
+      { label: isAcademicAdmin ? 'INSTITUTION SCHEDULES' : 'DEPARTMENT CLASSES', value: visibleSchedules.length, note: 'scheduled entries', target: isAcademicAdmin ? 'schedules' : 'timetable' },
+      { label: 'NEEDS APPROVAL', value: pendingSchedules.length, note: 'awaiting review', target: 'approvals' },
+      { label: 'OPEN CONFLICTS', value: openConflicts.length, note: 'need resolution', target: 'conflicts' },
+      { label: 'FACULTY AVAILABLE', value: `${visibleFaculty.filter((item) => item.available).length}/${visibleFaculty.length}`, note: 'availability status', target: isAcademicAdmin ? null : 'faculty' },
+    ]
+    function goToView(target) {
+      if (!target) return
+      setActiveView(target)
+      setNotice('')
+    }
     return (
       <>
         <section className="admin-metrics" aria-label="Scheduling summary">
-          <article><span>{isAcademicAdmin ? 'INSTITUTION SCHEDULES' : 'DEPARTMENT CLASSES'}</span><strong>{visibleSchedules.length}</strong><small>scheduled entries</small></article>
-          <article><span>NEEDS APPROVAL</span><strong>{pendingSchedules.length}</strong><small>awaiting review</small></article>
-          <article><span>OPEN CONFLICTS</span><strong>{openConflicts.length}</strong><small>need resolution</small></article>
-          <article><span>FACULTY AVAILABLE</span><strong>{visibleFaculty.filter((item) => item.available).length}/{visibleFaculty.length}</strong><small>availability status</small></article>
+          {metrics.map((metric) => (
+            <article
+              key={metric.label}
+              className={metric.target ? 'is-interactive' : ''}
+              {...(metric.target ? {
+                role: 'button',
+                tabIndex: 0,
+                onClick: () => goToView(metric.target),
+                onKeyDown: (event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    goToView(metric.target)
+                  }
+                },
+              } : {})}
+            >
+              <span>{metric.label}</span><strong>{metric.value}</strong><small>{metric.note}</small>
+              {metric.target && <i className="admin-metric-arrow" aria-hidden="true">→</i>}
+            </article>
+          ))}
         </section>
         <section className="admin-panel">
           <div className="admin-panel-heading">
             <div><p className="admin-kicker">SCHEDULE OVERVIEW</p><h2>{isAcademicAdmin ? 'Institution timetable' : `${department} timetable`}</h2></div>
             <button className="admin-text-action" type="button" onClick={() => setActiveView(isAcademicAdmin ? 'schedules' : 'timetable')}>View all schedules <span aria-hidden="true">→</span></button>
           </div>
+          {renderScheduleToolbar({ status: false, view: false })}
           {renderScheduleTable()}
         </section>
         <section className="admin-quick-actions" aria-label="Scheduling actions">
@@ -412,7 +555,7 @@ function AdminDashboardPage({ session, onSignOut }) {
   function renderFacultyWorkload() {
     if (workloadError) return <section className="admin-panel"><p className="admin-notice" role="alert">{workloadError}</p></section>
     if (!workloadReport) return <section className="admin-panel"><p className="admin-empty-state" role="status">Loading faculty workload...</p></section>
-    const { summary, faculty: facultyWorkloads, overloadedFaculty } = workloadReport
+    const { summary, faculty: facultyWorkloads } = workloadReport
     return (
       <>
         <section className="workload-summary-grid" aria-label="Faculty workload summary">
@@ -421,10 +564,6 @@ function AdminDashboardPage({ session, onSignOut }) {
           <article><span>AVERAGE UTILIZATION</span><strong>{summary.averageUtilizationPercentage}%</strong><small>of configured maximum</small></article>
           <article><span>HIGH / OVERLOADED</span><strong>{summary.High} / {summary.Overloaded}</strong><small>faculty requiring attention</small></article>
           <article><span>UNDER-UTILIZED</span><strong>{summary['Under-utilized']}</strong><small>below 50% of maximum</small></article>
-        </section>
-        <section className="admin-panel workload-panel">
-          <div className="admin-panel-heading"><div><p className="admin-kicker">CAPACITY WATCH</p><h2>Overloaded faculty</h2><p>Published weekly hours exceed the configured teaching maximum.</p></div></div>
-          {overloadedFaculty.length ? <ul className="overloaded-faculty-list">{overloadedFaculty.map((item) => <li key={item.facultyId}><strong>{item.faculty}</strong><span>{item.department} · {item.weeklyTeachingHours} / {item.maximumAllowedHours} h · {item.utilizationPercentage}%</span></li>)}</ul> : <div className="admin-empty-state">No faculty are over their configured teaching hours.</div>}
         </section>
         <section className="admin-panel workload-panel">
           <div className="admin-panel-heading"><div><p className="admin-kicker">PUBLISHED TIMETABLE</p><h2>Faculty workload</h2><p>Hours and class counts are calculated from published entries only.</p></div></div>
@@ -512,7 +651,7 @@ function AdminDashboardPage({ session, onSignOut }) {
         {notice && <p className="admin-notice" role="status">{notice}</p>}
         {activeView === 'overview' && renderOverview()}
         {activeView === 'manual-timetable' && <ManualTimetablePage session={session} />}
-        {(activeView === 'timetable' || activeView === 'schedules') && <section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">{isAcademicAdmin ? 'INSTITUTION-WIDE SCHEDULING' : 'COURSE & RESOURCE ALLOCATION'}</p><h2>{isAcademicAdmin ? 'All department schedules' : `${department} timetable`}</h2><p>{isAcademicAdmin ? 'Review teaching schedules across all departments.' : 'Assign subjects, faculty, and rooms to each teaching slot.'}</p></div><div className="schedule-actions">{isAcademicAdmin && <select aria-label="Filter by department" value={scheduleFilter} onChange={(event) => setScheduleFilter(event.target.value)}><option>All departments</option>{departments.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}</select>}{!isAcademicAdmin && <button className="admin-primary-button" type="button" onClick={() => setIsCreateOpen(true)}>Create timetable</button>}</div></div>{renderScheduleTable()}</section>}
+        {(activeView === 'timetable' || activeView === 'schedules') && <section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">{isAcademicAdmin ? 'INSTITUTION-WIDE SCHEDULING' : 'COURSE & RESOURCE ALLOCATION'}</p><h2>{isAcademicAdmin ? 'All department schedules' : `${department} timetable`}</h2><p>{isAcademicAdmin ? 'Review teaching schedules across all departments.' : 'Assign subjects, faculty, and rooms to each teaching slot.'}</p></div><div className="schedule-actions">{isAcademicAdmin && <select aria-label="Filter by department" value={scheduleFilter} onChange={(event) => setScheduleFilter(event.target.value)}><option>All departments</option>{departments.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}</select>}{!isAcademicAdmin && <button className="admin-primary-button" type="button" onClick={() => setIsCreateOpen(true)}>Create timetable</button>}</div></div>{renderScheduleToolbar({ status: true, view: true })}{scheduleView === 'board' ? renderScheduleBoard() : renderScheduleTable()}</section>}
         {activeView === 'faculty' && renderFaculty()}
         {activeView === 'faculty-workload' && renderFacultyWorkload()}
         {activeView === 'change-requests' && renderChangeRequests()}
