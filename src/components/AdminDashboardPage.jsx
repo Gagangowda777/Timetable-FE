@@ -12,6 +12,17 @@ function resequenceSlots(slots, day) {
   return slots.map((slot) => sequences.has(slot.id) ? { ...slot, sequence: sequences.get(slot.id) } : slot)
 }
 
+function calendarFingerprint(days, slots) {
+  return JSON.stringify({
+    workingDays: [...days],
+    timeSlots: [...slots]
+      .map(({ day, start, end, type, sequence, status }) => ({ day, start, end, type, sequence, status }))
+      .sort((left, right) => weekdays.indexOf(left.day) - weekdays.indexOf(right.day)
+        || left.sequence - right.sequence
+        || left.start.localeCompare(right.start)),
+  })
+}
+
 function AdminDashboardPage({ session, onSignOut }) {
   const isAcademicAdmin = session.role === 'academic-admin'
   const roleLabel = isAcademicAdmin ? 'Academic Admin' : 'Department Admin'
@@ -39,6 +50,9 @@ function AdminDashboardPage({ session, onSignOut }) {
   const [approvalConflicts, setApprovalConflicts] = useState([])
   const [resolvingConflictId, setResolvingConflictId] = useState(null)
   const [notice, setNotice] = useState('')
+  const [slotDayView, setSlotDayView] = useState('')
+  const [savedCalendar, setSavedCalendar] = useState('')
+  const calendarDirty = Boolean(savedCalendar) && calendarFingerprint(workingDays, timeSlots) !== savedCalendar
 
   useEffect(() => {
     let active = true
@@ -52,6 +66,7 @@ function AdminDashboardPage({ session, onSignOut }) {
         setConflicts(result.conflicts)
         setWorkingDays(result.workingDays)
         setTimeSlots(result.timeSlots)
+        setSavedCalendar(calendarFingerprint(result.workingDays, result.timeSlots))
       })
       .catch((error) => {
         if (active) setNotice(error.message)
@@ -82,7 +97,7 @@ function AdminDashboardPage({ session, onSignOut }) {
   }
 
   const tabs = isAcademicAdmin
-    ? [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['schedules', 'Schedules'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Change requests'], ['settings', 'Working hours'], ['reports', 'Reports']]
+    ? [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['schedules', 'Schedules'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Change requests'], ['settings', 'Working hours']]
     : [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['timetable', 'Timetable'], ['faculty', 'Faculty'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Change requests']]
   const visibleSchedules = schedules.filter((item) => {
     if (isAcademicAdmin) return scheduleFilter === 'All departments' || item.department === scheduleFilter
@@ -213,14 +228,18 @@ function AdminDashboardPage({ session, onSignOut }) {
     })
   }
 
-  function addTimeSlot() {
-    setTimeSlots((current) => {
-      const day = workingDays[0] || weekdays[0]
-      return [...current, {
-        id: `new-${Date.now()}`, day, start: '14:00', end: '15:00', type: 'CLASS',
-        sequence: current.filter((slot) => slot.day === day).length + 1, status: 'Active',
-      }]
-    })
+  function addTimeSlot(day) {
+    const targetDay = weekdays.includes(day) ? day : (workingDays[0] || weekdays[0])
+    setTimeSlots((current) => [...current, {
+      id: `new-${Date.now()}`,
+      day: targetDay,
+      start: '14:00',
+      end: '15:00',
+      type: 'CLASS',
+      sequence: current.filter((slot) => slot.day === targetDay).length + 1,
+      status: 'Active',
+    }])
+    setSlotDayView(targetDay)
   }
 
   function moveTimeSlot(id, direction) {
@@ -255,27 +274,8 @@ function AdminDashboardPage({ session, onSignOut }) {
       })
       setWorkingDays(calendar.workingDays)
       setTimeSlots(calendar.timeSlots)
+      setSavedCalendar(calendarFingerprint(calendar.workingDays, calendar.timeSlots))
       setNotice('Institution working days and time slots have been saved.')
-    } catch (error) {
-      setNotice(error.message)
-    }
-  }
-
-  async function generateReport() {
-    try {
-      const { schedules: reportSchedules } = await apiRequest('/admin/reports/schedules')
-      const rows = [
-        ['Department', 'Day', 'Start', 'End', 'Subject', 'Code', 'Faculty', 'Room', 'Status'],
-        ...reportSchedules.map((item) => [item.department, item.day, item.start, item.end, item.subject, item.code, item.faculty, item.room, item.status]),
-      ]
-      const csv = rows.map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\n')
-      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'institution-timetable-report.csv'
-      link.click()
-      URL.revokeObjectURL(url)
-      setNotice('The timetable report has been downloaded.')
     } catch (error) {
       setNotice(error.message)
     }
@@ -457,7 +457,7 @@ function AdminDashboardPage({ session, onSignOut }) {
             <>
               <button type="button" onClick={() => setActiveView('conflicts')}><span>01</span><strong>Resolve conflicts</strong><small>{openConflicts.length} open items</small></button>
               <button type="button" onClick={() => setActiveView('settings')}><span>02</span><strong>Configure working hours</strong><small>{workingDays.length} active days · {timeSlots.length} time slots</small></button>
-              <button type="button" onClick={() => setActiveView('reports')}><span>03</span><strong>Generate reports</strong><small>Export institution schedules</small></button>
+              <button type="button" onClick={() => setActiveView('change-requests')}><span>03</span><strong>Review change requests</strong><small>{pendingChangeRequests.length} pending requests</small></button>
             </>
           ) : (
             <>
@@ -610,34 +610,101 @@ function AdminDashboardPage({ session, onSignOut }) {
   function renderSettings() {
     const orderedSlots = [...timeSlots].sort((left, right) => weekdays.indexOf(left.day) - weekdays.indexOf(right.day)
       || left.sequence - right.sequence)
+    const countSlotsFor = (day) => orderedSlots.filter((slot) => slot.day === day).length
+    const daysWithSlots = weekdays.filter((day) => countSlotsFor(day) > 0)
+    const activeSlotDay = weekdays.includes(slotDayView)
+      ? slotDayView
+      : (daysWithSlots.includes(todayName) ? todayName : daysWithSlots[0] || workingDays[0] || weekdays[0])
+    const daySlots = orderedSlots.filter((slot) => slot.day === activeSlotDay)
+    const classSlots = orderedSlots.filter((slot) => slot.type === 'CLASS')
+    function moveSlotToDay(id, day) {
+      updateTimeSlot(id, 'day', day)
+      setSlotDayView(day)
+    }
+    const dailySpan = classSlots.length
+      ? `${classSlots.map((slot) => slot.start).sort()[0]}–${classSlots.map((slot) => slot.end).sort().at(-1)}`
+      : 'No class periods'
     return (
       <section className="admin-panel settings-panel">
-        <div className="admin-panel-heading"><div><p className="admin-kicker">INSTITUTION CALENDAR</p><h2>Working days &amp; time slots</h2><p>Set the days and teaching periods available to every department.</p></div></div>
-        <div className="settings-block"><h3>Working days</h3><div className="working-day-options">{weekdays.map((day) => <label key={day}><input type="checkbox" checked={workingDays.includes(day)} onChange={() => toggleWorkingDay(day)} /><span>{day.slice(0, 3)}</span></label>)}</div></div>
-        <div className="settings-block"><div className="time-slots-heading"><h3>Time slots</h3><button className="admin-secondary-button" type="button" onClick={addTimeSlot}>Add time slot</button></div><div className="time-slot-list">{orderedSlots.map((slot) => {
-          const daySlots = orderedSlots.filter((item) => item.day === slot.day)
-          const slotIndex = daySlots.findIndex((item) => item.id === slot.id)
-          return <div className={`time-slot-row${slot.status === 'Inactive' ? ' is-inactive' : ''}`} key={slot.id}>
-            <strong className="time-slot-sequence">{String(slot.sequence).padStart(2, '0')}</strong>
-            <label>Day<select aria-label={`Slot ${slot.sequence} day`} value={slot.day} onChange={(event) => updateTimeSlot(slot.id, 'day', event.target.value)}>{weekdays.map((day) => <option key={day}>{day}</option>)}</select></label>
-            <label>Start<input aria-label={`${slot.day} slot ${slot.sequence} start time`} type="time" value={slot.start} onChange={(event) => updateTimeSlot(slot.id, 'start', event.target.value)} /></label>
-            <label>End<input aria-label={`${slot.day} slot ${slot.sequence} end time`} type="time" value={slot.end} onChange={(event) => updateTimeSlot(slot.id, 'end', event.target.value)} /></label>
-            <label>Type<select aria-label={`${slot.day} slot ${slot.sequence} type`} value={slot.type} onChange={(event) => updateTimeSlot(slot.id, 'type', event.target.value)}><option>CLASS</option><option>BREAK</option><option>LUNCH</option></select></label>
-            <label>Status<select aria-label={`${slot.day} slot ${slot.sequence} status`} value={slot.status} onChange={(event) => updateTimeSlot(slot.id, 'status', event.target.value)}><option>Active</option><option>Inactive</option></select></label>
-            <div className="time-slot-actions"><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} up`} title="Move up" disabled={slotIndex === 0} onClick={() => moveTimeSlot(slot.id, -1)}>↑</button><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} down`} title="Move down" disabled={slotIndex === daySlots.length - 1} onClick={() => moveTimeSlot(slot.id, 1)}>↓</button><button type="button" aria-label={`Remove ${slot.day} slot ${slot.sequence}`} title="Remove slot" onClick={() => removeTimeSlot(slot.id)}>×</button></div>
+        <div className="admin-panel-heading">
+          <div><p className="admin-kicker">INSTITUTION CALENDAR</p><h2>Working days &amp; time slots</h2><p>Set the days and teaching periods available to every department.</p></div>
+          <div className="settings-summary-chips" aria-label="Calendar summary"><span>{workingDays.length} active days</span><span>{timeSlots.length} time slots</span><span>{dailySpan}</span></div>
+        </div>
+        <div className="settings-grid">
+          <div className="settings-block settings-block-days">
+            <div className="settings-block-heading"><h3>Working days</h3></div>
+            <p className="settings-hint">Days classes can be scheduled on. Untick a day to hide it from every timetable view.</p>
+            <div className="working-day-options">
+              {weekdays.map((day) => {
+                const isEnabled = workingDays.includes(day)
+                const slotCount = orderedSlots.filter((slot) => slot.day === day).length
+                return (
+                  <label className={`working-day-card${isEnabled ? ' is-on' : ''}`} key={day}>
+                    <input type="checkbox" checked={isEnabled} onChange={() => toggleWorkingDay(day)} />
+                    <span className="working-day-tick" aria-hidden="true">✓</span>
+                    <span className="working-day-name">{day}</span>
+                    <span className="working-day-meta">{slotCount ? `${slotCount} slot${slotCount === 1 ? '' : 's'}` : 'No slots'}</span>
+                  </label>
+                )
+              })}
+            </div>
           </div>
-        })}</div></div>
-        <button className="admin-primary-button settings-save" type="button" onClick={saveCalendar}>Save institution hours</button>
-      </section>
-    )
-  }
-
-  function renderReports() {
-    return (
-      <section className="admin-panel report-panel">
-        <div className="admin-panel-heading"><div><p className="admin-kicker">INSTITUTION ANALYTICS</p><h2>Scheduling reports</h2><p>Generate an institution-wide schedule export for review and record keeping.</p></div></div>
-        <div className="report-summary"><article><span>Departments</span><strong>{new Set(schedules.map((item) => item.department)).size}</strong></article><article><span>Scheduled classes</span><strong>{schedules.length}</strong></article><article><span>Published</span><strong>{schedules.filter((item) => item.status === 'Published').length}</strong></article><article><span>Open conflicts</span><strong>{openConflicts.length}</strong></article></div>
-        <button className="admin-primary-button" type="button" onClick={generateReport}><span aria-hidden="true">↓</span> Download timetable report</button>
+          <div className="settings-block settings-block-slots">
+            <div className="time-slots-heading">
+              <div><h3>Time slots</h3><p className="settings-hint">Choose a day, then edit its periods or reorder them with the arrows.</p></div>
+              <button className="admin-secondary-button" type="button" onClick={() => addTimeSlot(activeSlotDay)}>Add time slot</button>
+            </div>
+            <div className="slot-day-tabs" role="tablist" aria-label="Days of the week">
+              {weekdays.map((day) => {
+                const slotCount = countSlotsFor(day)
+                const isActive = day === activeSlotDay
+                return (
+                  <button
+                    className={`slot-day-tab${isActive ? ' is-active' : ''}${workingDays.includes(day) ? '' : ' is-off'}`}
+                    type="button"
+                    role="tab"
+                    key={day}
+                    id={`slot-tab-${day}`}
+                    aria-selected={isActive}
+                    aria-controls="slot-day-panel"
+                    aria-label={`${day}, ${slotCount} slot${slotCount === 1 ? '' : 's'}`}
+                    onClick={() => setSlotDayView(day)}
+                  >
+                    <strong>{day.slice(0, 3)}</strong>
+                    <span>{slotCount || '–'}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <section className="slot-day-panel" role="tabpanel" id="slot-day-panel" aria-labelledby={`slot-tab-${activeSlotDay}`}>
+              <header className="slot-day-heading">
+                <strong>{activeSlotDay}</strong>
+                <span>{daySlots.length} period{daySlots.length === 1 ? '' : 's'}{activeSlotDay === todayName ? ' · Today' : ''}</span>
+                {!workingDays.includes(activeSlotDay) && <em>Not a working day</em>}
+              </header>
+              {daySlots.length ? daySlots.map((slot, slotIndex) => (
+                <div className={`time-slot-row${slot.status === 'Inactive' ? ' is-inactive' : ''}`} key={slot.id}>
+                  <strong className="time-slot-sequence">{String(slot.sequence).padStart(2, '0')}</strong>
+                  <label>Start<input aria-label={`${slot.day} slot ${slot.sequence} start time`} type="time" value={slot.start} onChange={(event) => updateTimeSlot(slot.id, 'start', event.target.value)} /></label>
+                  <label>End<input aria-label={`${slot.day} slot ${slot.sequence} end time`} type="time" value={slot.end} onChange={(event) => updateTimeSlot(slot.id, 'end', event.target.value)} /></label>
+                  <label>Type<select aria-label={`${slot.day} slot ${slot.sequence} type`} value={slot.type} onChange={(event) => updateTimeSlot(slot.id, 'type', event.target.value)}><option>CLASS</option><option>BREAK</option><option>LUNCH</option></select></label>
+                  <label>Status<select aria-label={`${slot.day} slot ${slot.sequence} status`} value={slot.status} onChange={(event) => updateTimeSlot(slot.id, 'status', event.target.value)}><option>Active</option><option>Inactive</option></select></label>
+                  <label>Move to day<select aria-label={`Move slot ${slot.sequence} to another day`} value={slot.day} onChange={(event) => moveSlotToDay(slot.id, event.target.value)}>{weekdays.map((dayOption) => <option key={dayOption}>{dayOption}</option>)}</select></label>
+                  <div className="time-slot-actions"><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} up`} title="Move up" disabled={slotIndex === 0} onClick={() => moveTimeSlot(slot.id, -1)}>↑</button><button type="button" aria-label={`Move ${slot.day} slot ${slot.sequence} down`} title="Move down" disabled={slotIndex === daySlots.length - 1} onClick={() => moveTimeSlot(slot.id, 1)}>↓</button><button type="button" aria-label={`Remove ${slot.day} slot ${slot.sequence}`} title="Remove slot" onClick={() => removeTimeSlot(slot.id)}>×</button></div>
+                </div>
+              )) : (
+                <div className="slot-day-empty">
+                  <p>No time slots on {activeSlotDay} yet.</p>
+                  <button className="admin-secondary-button" type="button" onClick={() => addTimeSlot(activeSlotDay)}>Add the first slot</button>
+                </div>
+              )}
+            </section>
+          </div>
+        </div>
+        <div className="settings-save-bar">
+          <p className={calendarDirty ? 'is-dirty' : ''}><i aria-hidden="true" />{calendarDirty ? 'Unsaved changes — save to apply them to every timetable.' : 'Everything is saved. Changes apply once saved.'}</p>
+          <button className="admin-primary-button" type="button" onClick={saveCalendar}>Save institution hours</button>
+        </div>
       </section>
     )
   }
@@ -661,7 +728,6 @@ function AdminDashboardPage({ session, onSignOut }) {
         {activeView === 'conflicts' && renderConflicts()}
         {activeView === 'approvals' && renderApprovals()}
         {activeView === 'settings' && renderSettings()}
-        {activeView === 'reports' && renderReports()}
       </div>
 
       {isCreateOpen && (
