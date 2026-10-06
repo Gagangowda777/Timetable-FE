@@ -1708,3 +1708,33 @@
     width: 100%;
   }
 }
+/* CAPACITY WATCH - overloaded faculty list (Faculty workload section) */
+.overloaded-faculty-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 1.2rem 1.2rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.overloaded-faculty-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(226, 120, 86, 0.28);
+  border-radius: 14px;
+  background: rgba(253, 242, 236, 0.85);
+}
+
+.overloaded-faculty-list li strong {
+  color: var(--text-main);
+  font-size: 0.8rem;
+}
+
+.overloaded-faculty-list li span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}

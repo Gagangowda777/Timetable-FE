@@ -37,6 +37,7 @@ function AdminDashboardPage({ session, onSignOut }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [scheduleConflicts, setScheduleConflicts] = useState([])
   const [approvalConflicts, setApprovalConflicts] = useState([])
+  const [resolvingConflictId, setResolvingConflictId] = useState(null)
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
@@ -171,12 +172,15 @@ function AdminDashboardPage({ session, onSignOut }) {
   }
 
   async function resolveConflict(id) {
+    setResolvingConflictId(id)
     try {
-      await apiRequest(`/admin/conflicts/${id}/resolve`, { method: 'PATCH' })
-      setNotice('Scheduling conflict resolved.')
+      const result = await apiRequest(`/admin/conflicts/${id}/resolve`, { method: 'PATCH' })
+      setNotice(result.message || 'Scheduling conflict resolved.')
       setReloadKey((key) => key + 1)
     } catch (error) {
       setNotice(error.message)
+    } finally {
+      setResolvingConflictId(null)
     }
   }
 
@@ -477,7 +481,9 @@ function AdminDashboardPage({ session, onSignOut }) {
               <article className={`conflict-row${item.status === 'Resolved' ? ' is-resolved' : ''}`} key={item.id}>
                 <span className="conflict-indicator" aria-hidden="true" />
                 <div className="conflict-info"><div className="conflict-title"><strong>{item.type}</strong><span>{item.status}</span></div><p>{item.detail}</p><small>{item.day} · {item.time} · {item.schedules}</small></div>
-                {item.status === 'Open' && <button className="admin-secondary-button" type="button" onClick={() => resolveConflict(item.id)}>Resolve</button>}
+                {item.status === 'Open' && (item.isCrossDepartment && !isAcademicAdmin
+                  ? <span className="request-count" title="Cross-department conflicts are resolved by an Academic Admin">Academic admin only</span>
+                  : <button className="admin-secondary-button" type="button" disabled={resolvingConflictId === item.id} onClick={() => resolveConflict(item.id)}>{resolvingConflictId === item.id ? 'Applying fix…' : 'Resolve'}</button>)}
               </article>
             ))}
           </div>
@@ -555,15 +561,12 @@ function AdminDashboardPage({ session, onSignOut }) {
   function renderFacultyWorkload() {
     if (workloadError) return <section className="admin-panel"><p className="admin-notice" role="alert">{workloadError}</p></section>
     if (!workloadReport) return <section className="admin-panel"><p className="admin-empty-state" role="status">Loading faculty workload...</p></section>
-    const { summary, faculty: facultyWorkloads } = workloadReport
+    const { faculty: facultyWorkloads, overloadedFaculty } = workloadReport
     return (
       <>
-        <section className="workload-summary-grid" aria-label="Faculty workload summary">
-          <article><span>FACULTY</span><strong>{summary.facultyCount}</strong><small>{summary.facultyWithClasses} with published classes</small></article>
-          <article><span>WEEKLY HOURS</span><strong>{summary.totalWeeklyTeachingHours}</strong><small>published timetable</small></article>
-          <article><span>AVERAGE UTILIZATION</span><strong>{summary.averageUtilizationPercentage}%</strong><small>of configured maximum</small></article>
-          <article><span>HIGH / OVERLOADED</span><strong>{summary.High} / {summary.Overloaded}</strong><small>faculty requiring attention</small></article>
-          <article><span>UNDER-UTILIZED</span><strong>{summary['Under-utilized']}</strong><small>below 50% of maximum</small></article>
+        <section className="admin-panel workload-panel">
+          <div className="admin-panel-heading"><div><p className="admin-kicker">CAPACITY WATCH</p><h2>Overloaded faculty</h2><p>Published weekly hours exceed the configured teaching maximum.</p></div></div>
+          {overloadedFaculty.length ? <ul className="overloaded-faculty-list">{overloadedFaculty.map((item) => <li key={item.facultyId}><strong>{item.faculty}</strong><span>{item.department} · {item.weeklyTeachingHours} / {item.maximumAllowedHours} h · {item.utilizationPercentage}%</span></li>)}</ul> : <div className="admin-empty-state">No faculty are over their configured teaching hours.</div>}
         </section>
         <section className="admin-panel workload-panel">
           <div className="admin-panel-heading"><div><p className="admin-kicker">PUBLISHED TIMETABLE</p><h2>Faculty workload</h2><p>Hours and class counts are calculated from published entries only.</p></div></div>
