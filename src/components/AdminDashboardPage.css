@@ -66,7 +66,7 @@
   border: 1px solid rgba(233, 170, 38, 0.25);
   border-radius: 999px;
   background: rgba(245, 158, 11, 0.08);
-  color: #92400e;
+  color: var(--warning);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -126,7 +126,7 @@
 }
 
 .admin-tabs button.is-active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.1));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.1));
   color: var(--text-main);
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.1);
 }
@@ -149,7 +149,7 @@
   border-left: 4px solid #10b981;
   border-radius: 14px;
   background: rgba(16, 185, 129, 0.08);
-  color: #065f46;
+  color: var(--success);
   font-size: 0.78rem;
   font-weight: 600;
 }
@@ -294,7 +294,7 @@
 
 .status-awaiting-approval {
   background: rgba(245, 158, 11, 0.12);
-  color: #92400e;
+  color: var(--warning);
 }
 
 .status-draft {
@@ -305,7 +305,7 @@
 .status-published,
 .status-approved {
   background: rgba(16, 185, 129, 0.12);
-  color: #065f46;
+  color: var(--success);
 }
 
 .admin-quick-actions {
@@ -531,7 +531,7 @@
   align-items: center;
   gap: 13px;
   padding: 15px 20px;
-  border-bottom: 1px solid #edf0eb;
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .conflict-row:last-child,
@@ -543,11 +543,11 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #df775d;
+  background: var(--danger);
 }
 
 .conflict-row.is-resolved .conflict-indicator {
-  background: #7a9b74;
+  background: var(--text-muted);
 }
 
 .conflict-title {
@@ -558,29 +558,29 @@
 
 .conflict-title strong,
 .approval-row strong {
-  color: #29483a;
+  color: var(--text-main);
   font-size: 11px;
 }
 
 .conflict-title > span {
-  color: #9b624c;
+  color: var(--danger);
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .conflict-row.is-resolved .conflict-title > span {
-  color: #678362;
+  color: var(--text-muted);
 }
 
 .conflict-info p {
   margin: 3px 0;
-  color: #5f7065;
+  color: var(--text-muted);
   font-size: 11px;
 }
 
 .conflict-info small {
-  color: #89948b;
+  color: var(--text-muted);
   font-size: 10px;
 }
 
@@ -592,7 +592,7 @@
 }
 
 .request-count {
-  color: #786440;
+  color: var(--warning);
   font-size: 10px;
   font-weight: 700;
 }
@@ -610,10 +610,10 @@
 
 .request-review-actions button {
   padding: 5px 7px;
-  border: 1px solid #ccd5ca;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #315c47;
-  background: #fffefa;
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font: inherit;
   font-size: 9px;
   font-weight: 700;
@@ -621,11 +621,11 @@
 }
 
 .request-review-actions button:last-child {
-  color: #96553f;
+  color: var(--danger);
 }
 
 .request-review-actions button:focus-visible {
-  outline: 2px solid #df775d;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -635,7 +635,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 13px 20px;
-  border-bottom: 1px solid #edf0eb;
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .approval-row > div {
@@ -647,20 +647,20 @@
 
 .approval-row > div > span {
   overflow: hidden;
-  color: #77847b;
+  color: var(--text-muted);
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .approval-row > div > small {
-  color: #77847b;
+  color: var(--text-muted);
   font-size: 9px;
 }
 
 .approval-row > div > .approval-review-note {
   overflow: visible;
-  color: #795346;
+  color: var(--danger);
   text-overflow: clip;
   white-space: normal;
 }
@@ -696,7 +696,7 @@
   gap: 7px;
   padding: 4px 0;
   border: 0;
-  color: #8d6850;
+  color: var(--danger);
   background: transparent;
   font: inherit;
   font-size: 10px;
@@ -708,15 +708,15 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #d08c6c;
+  background: var(--danger);
 }
 
 .availability-toggle.is-available {
-  color: #497251;
+  color: var(--text-main);
 }
 
 .availability-toggle.is-available i {
-  background: #7a9b74;
+  background: var(--text-muted);
 }
 
 .settings-panel {
@@ -730,7 +730,7 @@
 
 .settings-block h3 {
   margin: 0 0 13px;
-  color: #29483a;
+  color: var(--text-main);
   font-size: 11px;
 }
 
@@ -747,7 +747,7 @@
 }
 
 .working-day-options input:focus-visible + span {
-  outline: 2px solid #df775d;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -768,10 +768,10 @@
   min-width: 0;
   min-height: 32px;
   padding: 0 7px;
-  border: 1px solid #d5ddd4;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #29483a;
-  background: #fffefa;
+  color: var(--text-main);
+  background: var(--bg-mesh);
   box-sizing: border-box;
   font: inherit;
   font-size: 11px;
@@ -784,9 +784,9 @@
   gap: 6px;
   margin: 0;
   padding: 10px 12px 10px 28px;
-  border-left: 3px solid #b94f3c;
-  color: #793a2e;
-  background: #fff3ef;
+  border-left: 3px solid var(--danger);
+  color: var(--danger);
+  background: var(--bg-mesh);
   font-size: 11px;
 }
 
@@ -817,16 +817,16 @@
   overflow-y: auto;
   place-items: center;
   padding: 20px;
-  background: #14251fcc;
+  background: rgba(15, 23, 42, 0.1);
 }
 
 .admin-modal {
   width: min(540px, 100%);
   padding: 20px;
-  border: 1px solid #e0e5de;
+  border: 1px solid var(--surface-border);
   border-radius: 5px;
-  background: #fffefa;
-  box-shadow: 0 16px 60px #0e261c40;
+  background: var(--bg-mesh);
+  box-shadow: 0 16px 60px rgba(15, 23, 42, 0.12);
   box-sizing: border-box;
   animation: admin-modal-arrive 180ms ease-out both;
 }
@@ -842,7 +842,7 @@
 .admin-modal-heading h2 {
   margin: 5px 0 0;
   color: var(--admin-ink);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: inherit;
   font-size: 24px;
   font-weight: 400;
 }
@@ -855,7 +855,7 @@
   place-items: center;
   border: 1px solid var(--admin-line);
   border-radius: 3px;
-  color: #66756b;
+  color: var(--text-muted);
   background: transparent;
   font-size: 20px;
   cursor: pointer;
@@ -873,7 +873,7 @@
   min-width: 0;
   flex-direction: column;
   gap: 6px;
-  color: #526258;
+  color: var(--text-muted);
   font-size: 10px;
   font-weight: 700;
 }
@@ -1123,8 +1123,8 @@
 }
 
 .schedule-day-chips button:hover {
-  border-color: #bfd4ff;
-  background: #f4f8ff;
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--bg-mesh);
   color: var(--reference-blue-dark);
 }
 
@@ -1143,7 +1143,7 @@
 }
 
 .schedule-day-chips button.is-active .today-dot {
-  background: #a7f3d0;
+  background: rgba(16, 185, 129, 0.25);
 }
 
 .schedule-toolbar-controls {
@@ -1158,7 +1158,7 @@
 .schedule-search {
   min-height: 34px;
   padding: 0 11px;
-  border: 1px solid #d7e2ee;
+  border: 1px solid var(--surface-border);
   border-radius: 7px;
   background: #fff;
   color: var(--reference-ink);
@@ -1200,7 +1200,7 @@
 }
 
 .schedule-view-toggle button:hover {
-  background: #f4f8ff;
+  background: var(--bg-mesh);
   color: var(--reference-blue-dark);
 }
 
@@ -1239,8 +1239,8 @@
 }
 
 .schedule-board-day.is-today {
-  border-color: #b9cdff;
-  background: #f4f8ff;
+  border-color: rgba(37, 99, 235, 0.25);
+  background: var(--bg-mesh);
   box-shadow: 0 8px 20px rgba(45, 99, 233, 0.1);
 }
 
@@ -1348,17 +1348,17 @@
 }
 
 .schedule-board-card--published .schedule-board-card-status {
-  background: #ecfdf5;
-  color: #065f46;
+  background: var(--success-bg);
+  color: var(--success);
 }
 
 .schedule-board-card--approved {
-  border-left-color: #2d63e9;
+  border-left-color: var(--primary);
 }
 
 .schedule-board-card--approved .schedule-board-card-status {
-  background: #eff5ff;
-  color: #174ac8;
+  background: var(--bg-mesh);
+  color: var(--primary-hover);
 }
 
 .schedule-board-card--pending {
@@ -1366,8 +1366,8 @@
 }
 
 .schedule-board-card--pending .schedule-board-card-status {
-  background: #fffbeb;
-  color: #92400e;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .schedule-board-card--rejected {
@@ -1375,8 +1375,8 @@
 }
 
 .schedule-board-card--rejected .schedule-board-card-status {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .schedule-board-card--draft {
@@ -1403,11 +1403,11 @@
 }
 
 .admin-table tbody tr:hover {
-  background: #f9fbff;
+  background: var(--bg-mesh);
 }
 
 .admin-table tbody tr.schedule-row-today {
-  background: #f4f8ff;
+  background: var(--bg-mesh);
 }
 
 .schedule-empty {
@@ -1489,7 +1489,7 @@
 
 .settings-summary-chips span {
   padding: 6px 11px;
-  border: 1px solid #dfe8f3;
+  border: 1px solid var(--surface-border);
   border-radius: 999px;
   background: #fff;
   color: var(--primary);
@@ -1510,7 +1510,7 @@
 }
 
 .admin-panel.settings-panel .settings-grid .settings-block + .settings-block {
-  border-left: 1px solid #e9eef6;
+  border-left: 1px solid var(--surface-border);
 }
 
 .admin-panel.settings-panel .settings-block h3 {
@@ -1547,7 +1547,7 @@
   flex-wrap: wrap;
   row-gap: 10px;
   padding: 1.35rem 1.5rem 1.1rem;
-  border-bottom: 1px solid #e9eef6;
+  border-bottom: 1px solid var(--surface-border);
 }
 
 /* Working days as selectable rows */
@@ -1563,7 +1563,7 @@
   align-items: center;
   gap: 10px;
   padding: 11px 13px;
-  border: 1px solid #e3eaf4;
+  border: 1px solid var(--bg-mesh);
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
@@ -1571,14 +1571,14 @@
 }
 
 .admin-panel.settings-panel .working-day-options .working-day-card:hover {
-  border-color: #bfd4ff;
-  background: #f8fbff;
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--bg-mesh);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.07);
 }
 
 .admin-panel.settings-panel .working-day-options .working-day-card.is-on {
-  border-color: #b3c9ff;
-  background: #f3f7ff;
+  border-color: rgba(37, 99, 235, 0.25);
+  background: var(--bg-mesh);
 }
 
 .admin-panel.settings-panel .working-day-options .working-day-card .working-day-tick {
@@ -1587,7 +1587,7 @@
   place-items: center;
   width: 22px;
   height: 22px;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--surface-border);
   border-radius: 7px;
   background: #fff;
   color: transparent;
@@ -1639,7 +1639,7 @@
   gap: 6px;
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid #dfe8f3;
+  border: 1px solid var(--surface-border);
   border-radius: 999px;
   background: #fff;
   color: var(--text-muted);
@@ -1650,8 +1650,8 @@
 }
 
 .slot-day-tab:hover {
-  border-color: #bfd4ff;
-  background: #f7faff;
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--bg-mesh);
   color: var(--primary);
 }
 
@@ -1662,7 +1662,7 @@
   height: 18px;
   padding: 0 5px;
   border-radius: 999px;
-  background: #eef3fb;
+  background: var(--bg-mesh);
   color: var(--text-muted);
   font-size: 10px;
   font-weight: 700;
@@ -1686,7 +1686,7 @@
 /* Single-day slot panel */
 .slot-day-panel {
   overflow: hidden;
-  border: 1px solid #e3e9f2;
+  border: 1px solid var(--surface-border);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.65);
 }
@@ -1696,8 +1696,8 @@
   align-items: center;
   gap: 10px;
   padding: 11px 16px;
-  border-bottom: 1px solid #e9eef6;
-  background: #f7fafe;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--bg-mesh);
 }
 
 .slot-day-heading strong {
@@ -1715,10 +1715,10 @@
 .slot-day-heading em {
   margin-left: auto;
   padding: 3px 10px;
-  border: 1px solid #f0dca9;
+  border: 1px solid var(--warning);
   border-radius: 999px;
-  background: #fff8e6;
-  color: #92701d;
+  background: var(--warning-bg);
+  color: var(--warning);
   font-size: 10px;
   font-style: normal;
   font-weight: 700;
@@ -1739,7 +1739,7 @@
   flex-direction: column;
   gap: 10px;
   padding: 12px 13px 13px;
-  border: 1px solid #e6ecf6;
+  border: 1px solid var(--bg-mesh);
   border-left: 4px solid var(--slot-accent);
   border-radius: 12px;
   background: #fff;
@@ -1764,9 +1764,9 @@
 }
 
 .slot-card:hover {
-  border-top-color: #d8e3f4;
-  border-right-color: #d8e3f4;
-  border-bottom-color: #d8e3f4;
+  border-top-color: var(--surface-border);
+  border-right-color: var(--surface-border);
+  border-bottom-color: var(--surface-border);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
@@ -1818,7 +1818,7 @@
 }
 
 .slot-card-time input:hover {
-  background: #f2f6fd;
+  background: var(--bg-mesh);
 }
 
 .slot-card-time input:focus {
@@ -1855,7 +1855,7 @@
 .slot-card-actions button {
   width: 28px;
   min-height: 28px;
-  border: 1px solid #e2e9f4;
+  border: 1px solid var(--bg-mesh);
   border-radius: 8px;
   background: #fff;
   color: var(--text-muted);
@@ -1865,8 +1865,8 @@
 }
 
 .slot-card-actions button:hover:not(:disabled) {
-  border-color: #bfd4ff;
-  background: #f7faff;
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--bg-mesh);
   color: var(--primary);
 }
 
@@ -1880,7 +1880,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
   padding-top: 10px;
-  border-top: 1px dashed #edf1f8;
+  border-top: 1px dashed var(--bg-mesh);
 }
 
 .slot-card-field {
@@ -1923,7 +1923,7 @@
 
 .slot-card-status select {
   background: rgba(16, 185, 129, 0.12);
-  color: #0f766e;
+  color: var(--success);
 }
 
 .slot-card.is-inactive .slot-card-status select {
@@ -1932,7 +1932,7 @@
 }
 
 .slot-card-move select {
-  border-color: #dbe3ef;
+  border-color: var(--surface-border);
   background: #fff;
   color: var(--text-main);
   font-weight: 600;
@@ -1948,7 +1948,7 @@
 }
 
 .admin-panel.settings-panel .slot-card-time input:hover {
-  background: #f2f6fd !important;
+  background: var(--bg-mesh) !important;
 }
 
 .admin-panel.settings-panel .slot-card-time input:focus {
@@ -1974,7 +1974,7 @@
 
 .admin-panel.settings-panel .slot-card-status select {
   background: rgba(16, 185, 129, 0.12) !important;
-  color: #0f766e !important;
+  color: var(--success) !important;
 }
 
 .admin-panel.settings-panel .slot-card.is-inactive .slot-card-status select {
@@ -1983,7 +1983,7 @@
 }
 
 .admin-panel.settings-panel .slot-card-move select {
-  border-color: #dbe3ef !important;
+  border-color: var(--surface-border) !important;
   border-radius: 9px !important;
   background: #fff !important;
   color: var(--text-main) !important;
@@ -2012,8 +2012,8 @@
   justify-content: space-between;
   gap: 14px;
   padding: 14px 24px 18px;
-  border-top: 1px solid #e9eef6;
-  background: #fbfcff;
+  border-top: 1px solid var(--surface-border);
+  background: var(--bg-mesh);
 }
 
 .settings-save-bar p {
@@ -2033,7 +2033,7 @@
 }
 
 .settings-save-bar p.is-dirty {
-  color: #92400e;
+  color: var(--warning);
 }
 
 .settings-save-bar p.is-dirty i {
@@ -2046,7 +2046,7 @@
   }
 
   .admin-panel.settings-panel .settings-grid .settings-block + .settings-block {
-    border-top: 1px solid #e9eef6;
+    border-top: 1px solid var(--surface-border);
     border-left: 0;
   }
 }

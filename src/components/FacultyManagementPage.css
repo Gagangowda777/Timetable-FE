@@ -127,7 +127,7 @@
 .faculty-form-notice {
   grid-column: 1 / -1;
   margin: 0;
-  color: #a33b2f;
+  color: var(--danger);
   font-size: 0.78rem;
 }
 

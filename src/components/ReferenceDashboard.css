@@ -1,12 +1,12 @@
 :root {
-  --reference-blue: #2d63e9;
-  --reference-blue-dark: #174ac8;
-  --reference-ink: #111a31;
-  --reference-muted: #647592;
-  --reference-canvas: #eff5fb;
-  --reference-line: #dfe8f3;
+  --reference-blue: var(--primary);
+  --reference-blue-dark: var(--primary-hover);
+  --reference-ink: var(--text-main);
+  --reference-muted: var(--text-muted);
+  --reference-canvas: var(--bg-mesh);
+  --reference-line: var(--surface-border);
   --reference-surface: #ffffff;
-  --reference-soft: #f7fafe;
+  --reference-soft: var(--bg-mesh);
 }
 
 body:has(.dashboard-page) {
@@ -60,8 +60,8 @@ body:has(.dashboard-page) .bg-orb {
   max-width: calc(100% - 48px);
   gap: 8px;
   transform: translateX(-50%);
-  color: #363484;
-  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--primary);
+  font-family: inherit;
   font-size: 11px;
   font-weight: 700;
   line-height: 0.9;
@@ -75,11 +75,11 @@ body:has(.dashboard-page) .bg-orb {
   width: 20px;
   height: 20px;
   place-items: center;
-  border: 1.5px solid #363484;
+  border: 1.5px solid var(--primary);
   border-radius: 50%;
-  color: #363484;
+  color: var(--primary);
   content: 'T';
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: inherit;
   font-size: 12px;
   line-height: 1;
 }
@@ -106,8 +106,8 @@ body:has(.dashboard-page) .bg-orb {
   place-items: center;
   border-radius: 50%;
   color: #fff;
-  background: #7138ee;
-  box-shadow: 0 7px 12px rgba(92, 44, 212, 0.25);
+  background: var(--primary);
+  box-shadow: 0 7px 12px rgba(37, 99, 235, 0.25);
   content: 'U';
   font-size: 19px;
   font-weight: 800;
@@ -148,18 +148,18 @@ body:has(.dashboard-page) .bg-orb {
   min-height: 50px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--danger-bg);
   border-radius: 8px;
   color: #ef4444;
-  background: #fff1f2;
+  background: var(--danger-bg);
   box-shadow: none;
   font-size: 14px;
   font-weight: 700;
 }
 
 .dashboard-page .dashboard-header .sign-out-button:hover {
-  color: #dc2626;
-  background: #ffe4e6;
+  color: var(--danger);
+  background: var(--danger-bg);
   transform: none;
 }
 
@@ -197,10 +197,10 @@ body:has(.dashboard-page) .bg-orb {
   margin: 0 0 6px !important;
   color: var(--reference-ink) !important;
   font-family: inherit !important;
-  font-size: 32px !important;
+  font-size: clamp(1.6rem, 3vw, 2.4rem) !important;
   font-weight: 800 !important;
-  letter-spacing: 0 !important;
-  line-height: 1.18 !important;
+  letter-spacing: -1px !important;
+  line-height: 1.15 !important;
 }
 
 .dashboard-welcome .dashboard-eyebrow,
@@ -232,18 +232,23 @@ body:has(.dashboard-page) .bg-orb {
   align-self: flex-start;
   margin: 12px 0 0;
   padding: 7px 11px !important;
-  border: 1px solid #a7f3d0 !important;
+  border: 1px solid rgba(37, 99, 235, 0.25) !important;
   border-radius: 999px !important;
-  color: #059669 !important;
-  background: #ecfdf5 !important;
+  color: var(--primary) !important;
+  background: rgba(37, 99, 235, 0.08) !important;
   box-shadow: none !important;
   font-size: 12px !important;
   font-weight: 700 !important;
-  letter-spacing: 0 !important;
+  letter-spacing: 1px !important;
 }
 
 .demo-badge i {
-  display: none;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
 }
 
 .timetable-tabs,
@@ -279,7 +284,7 @@ body:has(.dashboard-page) .bg-orb {
   padding: 0 21px !important;
   border: 0 !important;
   border-radius: 9px !important;
-  color: #25344f !important;
+  color: var(--text-main) !important;
   background: transparent !important;
   box-shadow: none !important;
   font-size: 15px !important;
@@ -291,15 +296,7 @@ body:has(.dashboard-page) .bg-orb {
 .timetable-tabs button::before,
 .admin-tabs button::before,
 .super-tabs button::before {
-  display: grid;
-  width: 19px;
-  height: 19px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1.5px solid currentColor;
-  border-radius: 5px;
-  color: currentColor;
-  content: '';
+  display: none;
 }
 
 .timetable-tabs button.is-active,
@@ -312,7 +309,7 @@ body:has(.dashboard-page) .bg-orb {
 .timetable-tabs button:hover,
 .admin-tabs button:hover,
 .super-tabs button:hover {
-  background: #edf4ff !important;
+  background: var(--bg-mesh) !important;
   color: var(--reference-blue-dark) !important;
   transform: none;
 }
@@ -331,7 +328,19 @@ body:has(.dashboard-page) .bg-orb {
   background: rgba(255, 255, 255, 0.18) !important;
 }
 
-.dashboard-stats,
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  margin: 0 0 24px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border: 1px solid var(--reference-line) !important;
+  border-radius: 12px !important;
+  background: var(--reference-surface) !important;
+  box-shadow: 0 9px 24px rgba(44, 79, 119, 0.05) !important;
+}
+
 .admin-metrics,
 .super-metrics,
 .super-analytics-metrics {
@@ -447,9 +456,10 @@ body:has(.dashboard-page) .bg-orb {
   margin: 5px 0 0 !important;
   color: var(--reference-ink) !important;
   font-family: inherit !important;
-  font-size: 21px !important;
+  font-size: 1.75rem !important;
   font-weight: 800 !important;
-  letter-spacing: 0 !important;
+  letter-spacing: -0.5px !important;
+  line-height: 1.2 !important;
 }
 
 .today-date-chip,
@@ -513,11 +523,9 @@ body:has(.dashboard-page) .bg-orb {
 .status-pill,
 .request-status,
 .super-status-pill {
-  border: 1px solid #a7f3d0 !important;
+  border: 1px solid transparent !important;
   border-radius: 999px !important;
-  color: #059669 !important;
-  background: #ecfdf5 !important;
-  letter-spacing: 0 !important;
+  letter-spacing: 0.9px !important;
 }
 
 .faculty-workload {
@@ -556,8 +564,8 @@ body:has(.dashboard-page) .bg-orb {
 
 .admin-quick-actions button:hover,
 .super-quick-links button:hover {
-  border-color: #bfd4ff !important;
-  background: #f1f6ff !important;
+  border-color: rgba(37, 99, 235, 0.35) !important;
+  background: var(--bg-mesh) !important;
   transform: none;
 }
 
@@ -579,19 +587,21 @@ body:has(.dashboard-page) .bg-orb {
 
 .admin-table th,
 .super-table th {
-  padding: 13px 18px !important;
+  padding: 1.25rem 1.5rem !important;
   color: var(--reference-muted) !important;
   background: var(--reference-soft) !important;
-  font-size: 10px !important;
-  letter-spacing: 0.03em !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px !important;
 }
 
 .admin-table td,
 .super-table td {
-  padding: 15px 18px !important;
+  padding: 1.35rem 1.5rem !important;
   border-color: var(--reference-line) !important;
-  color: var(--reference-muted) !important;
-  font-size: 12px !important;
+  color: var(--reference-ink) !important;
+  font-size: 0.88rem !important;
 }
 
 .admin-table td strong,
@@ -603,12 +613,15 @@ body:has(.dashboard-page) .bg-orb {
 .admin-primary-button,
 .super-primary-button,
 .today-button {
-  min-height: 38px !important;
-  border: 1px solid var(--reference-blue) !important;
-  border-radius: 7px !important;
+  min-height: 40px !important;
+  padding: 0 1.35rem !important;
+  border: none !important;
+  border-radius: 12px !important;
   color: #fff !important;
-  background: var(--reference-blue) !important;
-  box-shadow: none !important;
+  background: var(--primary) !important;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25) !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
 }
 
 .admin-secondary-button,
@@ -616,24 +629,27 @@ body:has(.dashboard-page) .bg-orb {
 .record-actions button,
 .admin-text-action,
 .super-link-button {
-  border-color: var(--reference-line) !important;
-  border-radius: 7px !important;
-  color: var(--reference-blue-dark) !important;
-  background: #fff !important;
+  border-color: transparent !important;
+  border-radius: 12px !important;
+  color: var(--text-main) !important;
+  background: transparent !important;
   box-shadow: none !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
 }
 
 .admin-primary-button:hover,
 .super-primary-button:hover,
 .today-button:hover {
-  background: var(--reference-blue-dark) !important;
-  transform: none;
+  background: var(--primary-hover) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
+  transform: translateY(-1px);
 }
 
 .admin-secondary-button:hover,
 .super-secondary-button:hover,
 .record-actions button:hover {
-  background: #f4f8ff !important;
+  background: rgba(15, 23, 42, 0.05) !important;
   transform: none;
 }
 
@@ -656,8 +672,8 @@ body:has(.dashboard-page) .bg-orb {
 .super-admin-page textarea,
 .faculty-change-form select,
 .faculty-change-form textarea {
-  border-color: #d7e2ee !important;
-  border-radius: 7px !important;
+  border-color: var(--surface-border) !important;
+  border-radius: 12px !important;
   color: var(--reference-ink) !important;
   background: #fff !important;
   box-shadow: none !important;
@@ -676,31 +692,33 @@ body:has(.dashboard-page) .bg-orb {
 
 .week-day.is-today,
 .week-day.is-today .week-day-heading {
-  background: #f1f6ff !important;
+  background: var(--bg-mesh) !important;
 }
 
 .week-class {
   border-left-color: var(--reference-blue) !important;
   border-radius: 4px !important;
-  background: #eff5ff !important;
+  background: var(--bg-mesh) !important;
 }
 
 .week-class:nth-child(even) {
   border-left-color: #10b981 !important;
-  background: #ecfdf5 !important;
+  background: var(--success-bg) !important;
 }
 
 .admin-modal-backdrop,
 .super-modal-backdrop {
-  background: rgba(15, 36, 68, 0.42) !important;
+  background: rgba(15, 23, 42, 0.35) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 .admin-modal,
 .super-modal {
   border-color: var(--reference-line) !important;
-  border-radius: 12px !important;
-  background: #fff !important;
-  box-shadow: 0 20px 56px rgba(15, 36, 68, 0.2) !important;
+  border-radius: 28px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(25px);
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.15) !important;
 }
 
 @media (max-width: 980px) {

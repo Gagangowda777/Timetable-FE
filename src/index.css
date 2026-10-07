@@ -1,34 +1,66 @@
+/* ==========================================================================
+   TRANSCEND DESIGN SYSTEM — global theme layer (imported last, wins over
+   component stylesheets at equal specificity)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS (guide section 2)
+   -------------------------------------------------------------------------- */
 :root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Canvas backgrounds */
+  --bg-color: #ffffff;
+  --bg-mesh: #f8fafc;
+
+  /* Typography hierarchy */
+  --text-main: #0f172a; /* Slate 900 — headings, titles, active tabs */
+  --text-muted: #64748b; /* Slate 500 — subtitles, labels, body text */
+  --text-subtle: #94a3b8; /* Slate 400 — metadata, timestamps, icons */
+
+  /* Primary brand & accent gradient */
+  --primary: #2563eb; /* Royal Blue */
+  --primary-hover: #1d4ed8; /* Deep Blue */
+  --accent: #0ea5e9; /* Sky Blue Accent */
+
+  /* Glassmorphism surfaces */
+  --surface-color: rgba(255, 255, 255, 0.85);
+  --surface-border: rgba(226, 232, 240, 0.8);
+  --surface-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  --surface-hover-shadow: 0 20px 40px rgba(37, 99, 235, 0.08);
+
+  /* Status colors */
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.08);
+  --info: #0891b2;
+  --info-bg: rgba(6, 182, 212, 0.1);
+
+  /* Legacy aliases referenced by component stylesheets */
+  --secondary: var(--accent);
+  --card-bg: var(--surface-color);
+  --admin-line: var(--surface-border);
+  --admin-ink: var(--text-main);
+  --admin-muted: var(--text-muted);
+  --super-line: var(--surface-border);
+  --super-ink: var(--text-main);
+  --super-muted: var(--text-muted);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #0f172a;
-  background: #f8fafc;
+  color: var(--text-main);
+  background: var(--bg-color);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  --bg-color: #f8fafc;
-  --bg-mesh: rgba(148, 163, 184, 0.08);
-  --card-bg: rgba(255, 255, 255, 0.82);
-  --surface-border: rgba(148, 163, 184, 0.22);
-  --surface-shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary: #7c3aed;
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.1);
-  --info-bg: rgba(14, 165, 233, 0.1);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -40,11 +72,14 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.925rem;
+  font-weight: 400;
+  line-height: 1.6;
   color: var(--text-main);
-  background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 22%),
-    radial-gradient(circle at right bottom, rgba(168, 85, 247, 0.14), transparent 24%),
-    var(--bg-color);
+  background: var(--bg-color);
 }
 
 button,
@@ -64,6 +99,58 @@ svg {
   min-height: 100svh;
 }
 
+/* --------------------------------------------------------------------------
+   2. TYPOGRAPHY HIERARCHY (guide section 1)
+   -------------------------------------------------------------------------- */
+h1 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  color: var(--text-main);
+}
+
+h2 {
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+}
+
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-main);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   3. AMBIENT MESH & ORBS (guide section 3A)
+   -------------------------------------------------------------------------- */
 .app-shell {
   position: relative;
   z-index: 1;
@@ -73,35 +160,39 @@ svg {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(226, 232, 240, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.4) 1px, transparent 1px);
   background-size: 32px 32px;
-  mask-image: radial-gradient(circle at center, black 35%, transparent 100%);
   pointer-events: none;
 }
 
 .bg-orb {
   position: fixed;
   z-index: 0;
-  width: 32rem;
-  height: 32rem;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.46;
+  opacity: 0.5;
   pointer-events: none;
-  animation: float 18s ease-in-out infinite alternate;
+  animation: float 20s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .orb-1 {
-  top: -12%;
-  left: -10%;
-  background: rgba(96, 165, 250, 0.34);
+  top: -10%;
+  left: 10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
 }
 
 .orb-2 {
-  right: -6%;
   bottom: 10%;
-  animation-delay: -8s;
-  background: rgba(168, 85, 247, 0.28);
+  right: -5%;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%);
+  animation-delay: -5s;
 }
 
 @keyframes float {
@@ -109,7 +200,7 @@ svg {
     transform: translate(0, 0) scale(1);
   }
   100% {
-    transform: translate(4%, 5%) scale(1.08);
+    transform: translate(5%, 5%) scale(1.05);
   }
 }
 
@@ -121,15 +212,179 @@ svg {
   z-index: 1;
 }
 
+/* --------------------------------------------------------------------------
+   4. BUTTONS — guide section 4 applied to every button class that the
+   ReferenceDashboard !important layer does not already own
+   -------------------------------------------------------------------------- */
+.submit-button,
+.login-form button[type='submit'],
+.faculty-change-form button,
+.faculty-leave-form button,
+.approval-actions button,
+.request-review-actions button,
+.admin-modal-actions button,
+.super-modal-actions button,
+.faculty-modal button,
+.manual-entry-modal button {
+  border-radius: 12px;
+  font-family: 'Inter', inherit;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submit-button {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--primary-hover);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   5. STATUS PILLS & BADGES — uppercase bold micro-labels (guide section 1)
+   -------------------------------------------------------------------------- */
 .status-pill,
 .request-status,
-.super-status-pill {
+.super-status-pill,
+.class-status,
+.demo-badge,
+.admin-demo-badge,
+.schedule-board-card-status,
+.slot-card-status,
+.class-status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
   border-radius: 999px;
+  font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  line-height: 1;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   6. SECTION KICKERS — badge-style eyebrow labels (guide hero-badge)
+   -------------------------------------------------------------------------- */
+.admin-kicker,
+.super-kicker,
+.dashboard-eyebrow,
+.faculty-toolbar .super-kicker {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* --------------------------------------------------------------------------
+   7. STAT CARDS — guide section 8
+   -------------------------------------------------------------------------- */
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.stat-item strong {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   8. DATA TABLES — header treatment for tables the Reference layer skips
+   -------------------------------------------------------------------------- */
+.admin-table td:first-child,
+.super-table td:first-child {
+  white-space: nowrap;
+}
+
+.faculty-table th,
+.audit-table th,
+.change-request-table th,
+.daily-hours-table th {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  background: rgba(15, 23, 42, 0.015);
+}
+
+/* --------------------------------------------------------------------------
+   9. MODALS — glassmorphism dialog (guide section 10)
+   -------------------------------------------------------------------------- */
+[class$='-backdrop'] {
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.faculty-modal,
+.manual-entry-modal {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--surface-border);
+  border-radius: 28px;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.15);
+}
+
+.admin-modal-close,
+.super-modal-close {
+  border-radius: 50%;
+  background: var(--bg-mesh);
+  border: 1px solid var(--surface-border);
+  color: var(--text-muted);
+}
+
+.admin-modal-close:hover,
+.super-modal-close:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+  transform: rotate(90deg);
+}
+
+/* --------------------------------------------------------------------------
+   10. LOGIN — hero headline per guide section 5
+   -------------------------------------------------------------------------- */
+.login-page .login-story h1 {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  background: linear-gradient(to right, #0f172a, #334155);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-input {
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   11. SHARED CONTROLS
+   -------------------------------------------------------------------------- */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
 }
 
 button {

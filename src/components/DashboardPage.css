@@ -1,7 +1,7 @@
 .dashboard-page {
-  --dashboard-ink: #111a31;
-  --dashboard-line: #dfe8f3;
-  --dashboard-muted: #647592;
+  --dashboard-ink: var(--text-main);
+  --dashboard-line: var(--surface-border);
+  --dashboard-muted: var(--text-muted);
   min-height: 100svh;
   color: var(--text-main);
 }
@@ -44,7 +44,7 @@
   padding: 0.25rem;
   border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 0.7rem;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(124, 58, 237, 0.12));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(37, 99, 235, 0.12));
   transform: rotate(-8deg);
 }
 
@@ -174,7 +174,7 @@
   border: 1px solid rgba(233, 170, 38, 0.25);
   border-radius: 999px;
   background: rgba(245, 158, 11, 0.08);
-  color: #92400e;
+  color: var(--warning);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -368,7 +368,7 @@
 }
 
 .timetable-tabs button.is-active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.1));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.1));
   color: var(--text-main);
   box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.1);
 }
@@ -380,7 +380,7 @@
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 999px;
   background: rgba(16, 185, 129, 0.08);
-  color: #065f46;
+  color: var(--success);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -607,12 +607,12 @@
   flex-direction: column;
   gap: 3px;
   padding: 8px 7px;
-  border-left: 2px solid #df775d;
+  border-left: 2px solid var(--primary);
   border-right: none;
   border-top: none;
   border-bottom: none;
   border-radius: 0 2px 2px 0;
-  background: #fbf3ed;
+  background: var(--bg-mesh);
   width: 100%;
   text-align: left;
   cursor: pointer;
@@ -620,8 +620,8 @@
 }
 
 .week-class-btn:nth-child(even) {
-  border-left-color: #d2ac59;
-  background: #f8f5e9;
+  border-left-color: var(--warning);
+  background: var(--bg-mesh);
 }
 
 .week-class-btn:hover {
@@ -631,7 +631,7 @@
 }
 
 .week-class-btn time {
-  color: #71846d;
+  color: var(--text-muted);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
 }
@@ -646,7 +646,7 @@
 
 .week-class-btn > span {
   overflow: hidden;
-  color: #77847b;
+  color: var(--text-muted);
   font-size: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -831,7 +831,7 @@
   justify-content: center;
   padding: 0.4rem 0;
   border-radius: 10px;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.08));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.08));
   color: var(--primary);
   font-size: 0.72rem;
   font-weight: 700;
@@ -919,17 +919,17 @@
 
 .request-status.is-pending {
   background: rgba(245, 158, 11, 0.12);
-  color: #92400e;
+  color: var(--warning);
 }
 
 .request-status.is-approved {
   background: rgba(16, 185, 129, 0.12);
-  color: #065f46;
+  color: var(--success);
 }
 
 .request-status.is-declined {
   background: rgba(239, 68, 68, 0.12);
-  color: #991b1b;
+  color: var(--danger);
 }
 
 .notification-error,
@@ -939,11 +939,11 @@
 }
 
 .notification-error {
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .change-request-notice {
-  color: #065f46;
+  color: var(--success);
 }
 
 @media (max-width: 900px) {
@@ -995,7 +995,7 @@
 
 .faculty-workload-metrics article strong {
   color: var(--dashboard-ink);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: inherit;
   font-size: 22px;
   font-weight: 400;
 }
@@ -1007,7 +1007,7 @@
   max-width: 760px;
   margin: 0 auto 28px !important;
   padding: 0 !important;
-  border: 1px solid #dadce0 !important;
+  border: 1px solid var(--surface-border) !important;
   border-radius: 8px !important;
   background: #ffffff !important;
   box-shadow: 0 1px 3px rgba(60, 64, 67, 0.15) !important;
@@ -1019,7 +1019,7 @@
   margin: 0 !important;
   padding: 22px 24px 20px !important;
   border-bottom: 0 !important;
-  background: #673ab7 !important;
+  background: var(--primary) !important;
 }
 
 .dashboard-content .faculty-change-section .section-kicker {
@@ -1053,10 +1053,10 @@
   flex-direction: column;
   gap: 8px;
   padding: 16px 18px;
-  border: 1px solid #dadce0;
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
   background: #ffffff;
-  color: #202124;
+  color: var(--text-main);
   font-size: 15px;
   font-weight: 500;
   letter-spacing: normal;
@@ -1066,13 +1066,13 @@
 
 .dashboard-content .faculty-change-form label:focus-within,
 .dashboard-content .faculty-leave-form label:focus-within {
-  border-color: #673ab7;
-  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.12);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
 
 .request-field-label {
   display: inline-block;
-  color: #202124;
+  color: var(--text-main);
   font-size: 15px;
   font-weight: 500;
   letter-spacing: normal;
@@ -1081,7 +1081,7 @@
 
 .request-required {
   margin-left: 3px;
-  color: #d93025;
+  color: var(--danger);
   font-weight: 500;
 }
 
@@ -1093,9 +1093,9 @@
   width: 100%;
   min-height: 44px;
   padding: 11px 12px;
-  border: 1px solid #dadce0 !important;
+  border: 1px solid var(--surface-border) !important;
   border-radius: 4px !important;
-  color: #202124 !important;
+  color: var(--text-main) !important;
   background: #ffffff !important;
   box-shadow: none !important;
   font: inherit;
@@ -1108,8 +1108,8 @@
 .dashboard-content .faculty-leave-form input:focus,
 .dashboard-content .faculty-leave-form textarea:focus {
   outline: none;
-  border-color: #673ab7 !important;
-  box-shadow: 0 0 0 1px #673ab7 !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary) !important;
 }
 
 .dashboard-content .faculty-change-form textarea,
@@ -1125,7 +1125,7 @@
   padding: 10px 24px;
   border: 0 !important;
   border-radius: 4px !important;
-  background: #673ab7 !important;
+  background: var(--primary) !important;
   color: #ffffff !important;
   font-size: 14px;
   font-weight: 500;
@@ -1136,13 +1136,13 @@
 
 .dashboard-content .faculty-change-form button:hover:not(:disabled),
 .dashboard-content .faculty-leave-form button:hover:not(:disabled) {
-  background: #5e35b1 !important;
+  background: var(--primary) !important;
 }
 
 .dashboard-content .faculty-change-form button:disabled,
 .dashboard-content .faculty-leave-form button:disabled {
   cursor: not-allowed;
-  background: #c5b6e0 !important;
+  background: var(--primary) !important;
 }
 
 .dashboard-content .faculty-change-section > .notification-error,
@@ -1153,22 +1153,22 @@
 }
 
 .dashboard-content .faculty-change-section > .notification-error {
-  color: #c5221f !important;
+  color: var(--danger) !important;
 }
 
 .dashboard-content .faculty-change-section > .change-request-notice {
-  color: #137333 !important;
+  color: var(--success) !important;
 }
 
 .dashboard-content .faculty-request-list {
   margin: 0;
   padding: 0 24px 24px;
-  border-top: 1px solid #dadce0 !important;
+  border-top: 1px solid var(--surface-border) !important;
 }
 
 .dashboard-content .faculty-request-list h3 {
   margin: 18px 0 12px !important;
-  color: #202124 !important;
+  color: var(--text-main) !important;
   font-family: inherit !important;
   font-size: 16px !important;
   font-weight: 500 !important;
@@ -1182,9 +1182,9 @@
   gap: 14px;
   margin-bottom: 10px;
   padding: 14px 16px;
-  border: 1px solid #dadce0 !important;
+  border: 1px solid var(--surface-border) !important;
   border-radius: 8px !important;
-  background: #f8f9fa !important;
+  background: var(--bg-mesh) !important;
 }
 
 .dashboard-content .faculty-request-item:last-child {
@@ -1192,7 +1192,7 @@
 }
 
 .dashboard-content .faculty-request-item strong {
-  color: #202124 !important;
+  color: var(--text-main) !important;
   font-size: 14px;
   font-weight: 500;
 }
@@ -1201,7 +1201,7 @@
 .dashboard-content .faculty-request-item small {
   display: block;
   margin: 4px 0 0;
-  color: #5f6368 !important;
+  color: var(--text-muted) !important;
   font-size: 12px !important;
 }
 
@@ -1210,10 +1210,10 @@
   flex: 0 0 auto;
   align-items: center;
   padding: 4px 10px;
-  border: 1px solid #fbbc04 !important;
+  border: 1px solid var(--warning) !important;
   border-radius: 999px !important;
-  color: #b06000 !important;
-  background: #fef7e0 !important;
+  color: var(--warning) !important;
+  background: var(--warning-bg) !important;
   font-size: 11px !important;
   font-weight: 500 !important;
   letter-spacing: 0 !important;
@@ -1221,15 +1221,15 @@
 }
 
 .dashboard-content .faculty-change-section .request-status.is-approved {
-  border-color: #34a853 !important;
-  color: #137333 !important;
-  background: #e6f4ea !important;
+  border-color: var(--success) !important;
+  color: var(--success) !important;
+  background: var(--success-bg) !important;
 }
 
 .dashboard-content .faculty-change-section .request-status.is-declined {
-  border-color: #ea4335 !important;
-  color: #c5221f !important;
-  background: #fce8e6 !important;
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+  background: var(--danger-bg) !important;
 }
 
 .notification-section {
@@ -1237,7 +1237,7 @@
   padding: 16px 18px;
   border: 1px solid var(--dashboard-line);
   border-radius: 4px;
-  background: #fffefa;
+  background: var(--bg-mesh);
 }
 
 .notification-heading,
@@ -1251,7 +1251,7 @@
 .notification-heading h2 {
   margin: 4px 0 0;
   color: var(--dashboard-ink);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: inherit;
   font-size: 19px;
   font-weight: 400;
 }
@@ -1259,9 +1259,9 @@
 .timetable-tabs button {
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid #ccd5ca;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #315c47;
+  color: var(--text-main);
   background: transparent;
   font: inherit;
   font-size: 11px;
@@ -1270,9 +1270,9 @@
 }
 
 .timetable-tabs button.is-active {
-  border-color: #315c47;
-  color: #fffefa;
-  background: #315c47;
+  border-color: var(--primary);
+  color: #ffffff;
+  background: var(--primary);
 }
 
 .notification-list {
@@ -1282,7 +1282,7 @@
 
 .notification-item {
   padding: 11px 0;
-  border-bottom: 1px solid #edf0eb;
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .notification-item:last-child {
@@ -1304,12 +1304,12 @@
 
 .notification-item time {
   flex: 0 0 auto;
-  color: #87938a;
+  color: var(--text-muted);
   font-size: 10px;
 }
 
 .notification-error {
-  color: #a33d32;
+  color: var(--danger);
 }
 
 .timetable-tabs {
@@ -1325,7 +1325,7 @@
 }
 
 .timetable-tabs button:focus-visible {
-  outline: 2px solid #df775d;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -1333,8 +1333,8 @@
   overflow-x: auto;
   border: 1px solid var(--dashboard-line);
   border-radius: 4px;
-  background: #fffefa;
-  scrollbar-color: #bdc9bd transparent;
+  background: var(--bg-mesh);
+  scrollbar-color: var(--surface-border) transparent;
   scrollbar-width: thin;
 }
 
@@ -1354,7 +1354,7 @@
 }
 
 .week-day.is-today {
-  background: #f5f8f1;
+  background: var(--bg-mesh);
 }
 
 .week-day-heading {
@@ -1363,7 +1363,7 @@
   justify-content: space-between;
   padding: 12px 11px;
   border-bottom: 1px solid var(--dashboard-line);
-  color: #87938a;
+  color: var(--text-muted);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1376,8 +1376,8 @@
 }
 
 .week-day.is-today .week-day-heading {
-  color: #55705d;
-  background: #eaf0e6;
+  color: var(--text-muted);
+  background: var(--bg-mesh);
 }
 
 .week-day-classes {
@@ -1392,18 +1392,18 @@
   flex-direction: column;
   gap: 3px;
   padding: 8px 7px;
-  border-left: 2px solid #df775d;
+  border-left: 2px solid var(--primary);
   border-radius: 0 2px 2px 0;
-  background: #fbf3ed;
+  background: var(--bg-mesh);
 }
 
 .week-class:nth-child(even) {
-  border-left-color: #d2ac59;
-  background: #f8f5e9;
+  border-left-color: var(--warning);
+  background: var(--bg-mesh);
 }
 
 .week-class time {
-  color: #71846d;
+  color: var(--text-muted);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
 }
@@ -1416,7 +1416,7 @@
 
 .week-class > span {
   overflow: hidden;
-  color: #77847b;
+  color: var(--text-muted);
   font-size: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1424,7 +1424,7 @@
 
 .week-empty {
   margin: 3px 0;
-  color: #a0aaa1;
+  color: var(--text-muted);
   font-size: 10px;
   text-align: center;
 }
@@ -1432,7 +1432,7 @@
 .sign-out-button:focus-visible,
 .today-button:focus-visible,
 .week-controls button:focus-visible {
-  outline: 2px solid #df775d;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 

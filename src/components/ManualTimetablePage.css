@@ -16,16 +16,16 @@
 .manual-validation-summary {
   margin: 0 21px 15px;
   padding: 11px 13px;
-  border-left: 3px solid #527c59;
-  color: #315c47;
-  background: #edf4ed;
+  border-left: 3px solid var(--success);
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font-size: 12px;
 }
 
 .manual-validation-summary.has-conflicts {
-  border-left-color: #b94f3c;
-  color: #793a2e;
-  background: #fff3ef;
+  border-left-color: var(--danger);
+  color: var(--danger);
+  background: var(--bg-mesh);
 }
 
 .manual-validation-summary ul {
@@ -54,7 +54,7 @@
 .manual-entry-form label {
   display: grid;
   gap: 5px;
-  color: #65736a;
+  color: var(--text-muted);
   font-size: 11px;
   font-weight: 700;
 }
@@ -65,17 +65,17 @@
   min-width: 0;
   min-height: 36px;
   padding: 0 8px;
-  border: 1px solid #d5ddd4;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #29483a;
-  background: #fffefa;
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font: inherit;
   font-size: 12px;
 }
 
 .manual-selection-grid select:disabled {
-  color: #89948d;
-  background: #f1f3ef;
+  color: var(--text-muted);
+  background: var(--bg-mesh);
 }
 
 .manual-version-bar {
@@ -90,7 +90,7 @@
   display: grid;
   min-width: min(260px, 100%);
   gap: 5px;
-  color: #65736a;
+  color: var(--text-muted);
   font-size: 11px;
   font-weight: 700;
 }
@@ -98,10 +98,10 @@
 .manual-version-bar select {
   min-height: 34px;
   padding: 0 8px;
-  border: 1px solid #d5ddd4;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #29483a;
-  background: #fffefa;
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font: inherit;
   font-size: 11px;
 }
@@ -111,10 +111,10 @@
   display: inline-flex;
   align-items: center;
   padding: 0 9px;
-  border: 1px solid #bfd0bd;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #315c47;
-  background: #edf4ed;
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font-size: 10px;
   font-weight: 700;
 }
@@ -122,9 +122,9 @@
 .version-comparison-summary {
   margin: 0 21px 15px;
   padding: 11px 13px;
-  border-left: 3px solid #799183;
-  color: #405b4e;
-  background: #f2f5f1;
+  border-left: 3px solid var(--text-muted);
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font-size: 11px;
 }
 
@@ -166,8 +166,8 @@
 .manual-timetable-grid th,
 .manual-timetable-grid td {
   padding: 7px;
-  border-right: 1px solid #e7ebe4;
-  border-bottom: 1px solid #e7ebe4;
+  border-right: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--surface-border);
   text-align: left;
   vertical-align: top;
 }
@@ -175,8 +175,8 @@
 .manual-timetable-grid thead th {
   position: sticky;
   top: 0;
-  background: #f3f5f0;
-  color: #315c47;
+  background: var(--bg-mesh);
+  color: var(--text-main);
   font-size: 11px;
   text-transform: uppercase;
 }
@@ -187,8 +187,8 @@
 }
 
 .manual-timetable-grid tbody th {
-  background: #fafbf8;
-  color: #526258;
+  background: var(--bg-mesh);
+  color: var(--text-muted);
   font-size: 11px;
 }
 
@@ -199,28 +199,28 @@
 
 .manual-timetable-grid tbody th span {
   margin-top: 3px;
-  color: #849087;
+  color: var(--text-muted);
   font-weight: 400;
 }
 
 .manual-timetable-grid td {
   height: 76px;
-  background: #fffefa;
+  background: var(--bg-mesh);
 }
 
 .manual-timetable-grid td.is-break,
 .manual-timetable-grid td.is-lunch {
-  background: #edf2e9;
+  background: var(--bg-mesh);
 }
 
 .manual-timetable-grid td.is-empty-time {
-  background: #f8f9f6;
+  background: var(--bg-mesh);
 }
 
 .manual-break-label {
   display: block;
   padding-top: 17px;
-  color: #496a51;
+  color: var(--text-main);
   font-size: 10px;
   font-weight: 800;
   text-align: center;
@@ -229,7 +229,7 @@
 .manual-entry-card {
   display: grid;
   gap: 3px;
-  color: #29483a;
+  color: var(--text-main);
   font-size: 10px;
 }
 
@@ -239,7 +239,7 @@
 
 .manual-entry-card > span,
 .manual-entry-card > small {
-  color: #65736a;
+  color: var(--text-muted);
   font-size: 9px;
 }
 
@@ -253,10 +253,10 @@
 .manual-add-entry {
   min-height: 25px;
   padding: 3px 6px;
-  border: 1px solid #d5ddd4;
+  border: 1px solid var(--surface-border);
   border-radius: 3px;
-  color: #315c47;
-  background: #fffefa;
+  color: var(--text-main);
+  background: var(--bg-mesh);
   font: inherit;
   font-size: 9px;
   cursor: pointer;
@@ -267,12 +267,12 @@
   height: 100%;
   min-height: 55px;
   border-style: dashed;
-  color: #708176;
+  color: var(--text-muted);
 }
 
 .manual-grid-empty {
   padding: 22px;
-  color: #76837a;
+  color: var(--text-muted);
   font-size: 12px;
   text-align: center;
 }
@@ -290,7 +290,7 @@
 .manual-entry-error {
   grid-column: 1 / -1;
   margin: 0;
-  color: #a33b2f;
+  color: var(--danger);
   font-size: 11px;
 }
 
