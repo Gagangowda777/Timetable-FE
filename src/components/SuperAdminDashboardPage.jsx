@@ -246,8 +246,8 @@ function SuperAdminDashboardPage({ session, onSignOut }) {
       const path = `/system/${modal.entity}${modal.record ? `/${modal.record.id}` : ''}`
       await apiRequest(path, { method: modal.record ? 'PATCH' : 'POST', body: values })
       await refreshOverview()
-      setNotice(`${definition.singular[0].toUpperCase()}${definition.singular.slice(1)} created.`)
-      if (modal.record) setNotice(`${definition.singular[0].toUpperCase()}${definition.singular.slice(1)} updated.`)
+      const singular = definition.singular[0].toUpperCase() + definition.singular.slice(1)
+      setNotice(`${singular} ${modal.record ? 'updated' : 'created'}.`)
       setModal(null)
     } catch (error) {
       setNotice(error.message)
@@ -270,7 +270,8 @@ function SuperAdminDashboardPage({ session, onSignOut }) {
     try {
       await apiRequest(`/system/${entity}/${record.id}`, { method: 'DELETE' })
       await refreshOverview()
-      setNotice(`${entityDefinitions[entity].singular} deleted.`)
+      const singular = entityDefinitions[entity].singular
+      setNotice(`${singular[0].toUpperCase()}${singular.slice(1)} deleted.`)
     } catch (error) {
       setNotice(error.message)
     }

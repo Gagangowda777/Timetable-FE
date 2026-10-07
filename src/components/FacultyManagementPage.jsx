@@ -61,7 +61,6 @@ function FacultyManagementPage() {
         if (!active) return
         setRecords(result.records)
         setOptions(result.options)
-        setNotice('')
       })
       .catch((error) => { if (active) setNotice(error.message) })
       .finally(() => { if (active) setLoading(false) })
@@ -134,11 +133,11 @@ function FacultyManagementPage() {
         <button className="super-primary-button" type="button" onClick={() => openEditor()}><span aria-hidden="true">+</span> Add faculty</button>
       </div>
       <div className="faculty-toolbar">
-        <label className="entity-search"><span aria-hidden="true">⌕</span><input aria-label="Search faculty" type="search" placeholder="Search name, faculty ID, or designation" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
-        <select aria-label="Filter faculty by department" value={departmentFilter} onChange={(event) => setDepartmentFilter(event.target.value)}>
+        <label className="entity-search"><span aria-hidden="true">⌕</span><input aria-label="Search faculty" type="search" placeholder="Search name, faculty ID, or designation" value={search} onChange={(event) => { setSearch(event.target.value); setNotice('') }} /></label>
+        <select aria-label="Filter faculty by department" value={departmentFilter} onChange={(event) => { setDepartmentFilter(event.target.value); setNotice('') }}>
           <option value="">All departments</option>{options.departments.map((department) => <option key={department.id} value={department.id}>{department.name}</option>)}
         </select>
-        <select aria-label="Filter faculty by status" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+        <select aria-label="Filter faculty by status" value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setNotice('') }}>
           <option value="">All statuses</option><option>Active</option><option>Inactive</option>
         </select>
         <span>{records.length} faculty</span>

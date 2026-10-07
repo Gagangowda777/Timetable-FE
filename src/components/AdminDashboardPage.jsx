@@ -270,7 +270,7 @@ function AdminDashboardPage({ session, onSignOut }) {
     try {
       const calendar = await apiRequest('/admin/calendar', {
         method: 'PUT',
-        body: { workingDays, timeSlots: timeSlots.map(({ day, start, end, type, sequence, status }) => ({ day, start, end, type, sequence, status })) },
+        body: { workingDays, timeSlots: timeSlots.map(({ id, day, start, end, type, sequence, status }) => ({ id, day, start, end, type, sequence, status })) },
       })
       setWorkingDays(calendar.workingDays)
       setTimeSlots(calendar.timeSlots)

@@ -224,9 +224,13 @@ function DashboardPage({ session, onSignOut }) {
             <span>classes on the timetable</span>
           </article>
           <article className="stat-item next-class-stat">
-            <span className="stat-label">UP NEXT</span>
+            <span className="stat-label">{timetable.summary.nextClass?.live ? 'IN PROGRESS' : 'UP NEXT'}</span>
             <strong>{timetable.summary.nextClass?.start || '—'}</strong>
-            <span>{timetable.summary.nextClass?.course || 'No more classes today'}</span>
+            <span>
+              {timetable.summary.nextClass
+                ? `${timetable.summary.nextClass.course}${timetable.summary.nextClass.live ? ` · until ${timetable.summary.nextClass.end}` : ''}`
+                : 'No more classes today'}
+            </span>
           </article>
         </section>
 
