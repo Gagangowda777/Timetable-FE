@@ -587,27 +587,64 @@ body:has(.dashboard-page) .bg-orb {
 
 .admin-table th,
 .super-table th {
-  padding: 1.25rem 1.5rem !important;
+  padding: 0.85rem 0.9rem !important;
   color: var(--reference-muted) !important;
   background: var(--reference-soft) !important;
-  font-size: 0.72rem !important;
-  font-weight: 800 !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
   text-transform: uppercase;
-  letter-spacing: 0.8px !important;
+  letter-spacing: 0.06em !important;
+  white-space: nowrap !important;
+  border-bottom: 1px solid var(--reference-line) !important;
+  vertical-align: middle !important;
 }
 
 .admin-table td,
 .super-table td {
-  padding: 1.35rem 1.5rem !important;
+  padding: 0.9rem 0.9rem !important;
   border-color: var(--reference-line) !important;
+  border-bottom-color: rgba(148, 163, 184, 0.16) !important;
   color: var(--reference-ink) !important;
-  font-size: 0.88rem !important;
+  font-size: 0.8rem !important;
+  vertical-align: middle !important;
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+}
+
+.admin-table td:last-child,
+.super-table td:last-child {
+  border-bottom: 0 !important;
 }
 
 .admin-table td strong,
 .super-table td strong {
   color: var(--reference-ink) !important;
-  font-size: 13px !important;
+  font-size: inherit !important;
+  font-weight: 600 !important;
+}
+
+.admin-table tbody tr,
+.super-table tbody tr {
+  transition: background 0.15s ease !important;
+}
+
+.admin-table tbody tr:hover,
+.super-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.03) !important;
+}
+
+.admin-table.wide,
+.super-table.wide {
+  table-layout: fixed !important;
+}
+
+.admin-table.wide th,
+.admin-table.wide td,
+.super-table.wide th,
+.super-table.wide td {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .admin-primary-button,

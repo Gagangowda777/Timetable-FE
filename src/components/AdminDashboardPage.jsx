@@ -378,9 +378,16 @@ function AdminDashboardPage({ session, onSignOut }) {
 
   function renderScheduleTable() {
     if (!filteredSchedules.length) return renderScheduleEmpty(visibleSchedules.length ? 'No classes match the current filters.' : 'No schedules have been created yet.')
-    return (
-      <div className="admin-table-scroll">
-        <table className="admin-table">
+    return (        <div className="admin-table-scroll">
+        <table className={`admin-table${isAcademicAdmin ? ' wide' : ''}`}>
+          <colgroup>
+            <col style={{ width: '11%' }} />
+            <col style={{ width: '26%' }} />
+            {isAcademicAdmin && <col style={{ width: '16%' }} />}
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '9%' }} />
+          </colgroup>
           <thead>
             <tr>
               <th>Day &amp; time</th>
@@ -551,7 +558,7 @@ function AdminDashboardPage({ session, onSignOut }) {
     return (
       <section className="admin-panel">
         <div className="admin-panel-heading"><div><p className="admin-kicker">FACULTY PLANNING</p><h2>Faculty availability</h2><p>Update availability before assigning teaching sessions.</p></div></div>
-        <div className="admin-table-scroll"><table className="admin-table"><thead><tr><th>Faculty member</th><th>Department</th><th>Available days</th><th>Availability</th></tr></thead><tbody>
+        <div className="admin-table-scroll"><table className="admin-table wide"><colgroup><col style={{ width: '22%' }} /><col style={{ width: '20%' }} /><col style={{ width: '20%' }} /><col style={{ width: '18%' }} /></colgroup><thead><tr><th>Faculty member</th><th>Department</th><th>Available days</th><th>Availability</th></tr></thead><tbody>
           {visibleFaculty.map((item) => <tr key={item.id}><td><strong>{item.name}</strong></td><td>{item.department}</td><td>{item.days}</td><td><button className={`availability-toggle${item.available ? ' is-available' : ''}`} type="button" aria-pressed={item.available} onClick={() => toggleFacultyAvailability(item.id, item.available)}><i />{item.available ? 'Available' : 'Unavailable'}</button></td></tr>)}
         </tbody></table></div>
       </section>
