@@ -143,7 +143,7 @@ function FacultyManagementPage() {
         <span>{records.length} faculty</span>
       </div>
       {notice && <p className="super-notice faculty-notice" role="status">{notice}</p>}
-      <div className="super-table-scroll"><table className="super-table faculty-table">
+      <div className="super-table-scroll"><table className="super-table faculty-table wide"><colgroup><col className="g-name" /><col className="g-email" /><col className="g-dept" /><col className="g-status" /><col className="g-actions" /></colgroup>
         <thead><tr><th>Faculty ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Subjects</th><th>Sections</th><th>Maximum hours</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>
           {records.map((record) => <tr key={record.id}>
