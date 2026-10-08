@@ -38,34 +38,10 @@
   margin-top: 0.5rem;
 }
 
+/* Automatic table layout: the nine faculty columns size themselves to their
+   content instead of using a column group that no longer matches the headers. */
 .faculty-table {
-  table-layout: fixed;
   width: 100%;
-}
-
-.faculty-table col.g-name {
-  width: 22%;
-  min-width: 130px;
-}
-
-.faculty-table col.g-email {
-  width: 20%;
-  min-width: 118px;
-}
-
-.faculty-table col.g-dept {
-  width: 14%;
-  min-width: 86px;
-}
-
-.faculty-table col.g-status {
-  width: 9%;
-  min-width: 64px;
-}
-
-.faculty-table col.g-actions {
-  width: 12%;
-  min-width: 72px;
 }
 
 .faculty-table td span:not(.super-status-pill) {

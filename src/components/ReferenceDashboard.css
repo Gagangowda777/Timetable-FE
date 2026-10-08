@@ -594,9 +594,20 @@ body:has(.dashboard-page) .bg-orb {
   font-weight: 700 !important;
   text-transform: uppercase;
   letter-spacing: 0.06em !important;
-  white-space: nowrap !important;
   border-bottom: 1px solid var(--reference-line) !important;
   vertical-align: middle !important;
+}
+
+/* Admin tables use fixed layouts with explicit column groups, so their headers
+   must stay on a single line. Super admin tables use automatic layout: letting
+   their labels wrap keeps every column readable inside the panel. */
+.admin-table th {
+  white-space: nowrap !important;
+}
+
+.super-table th {
+  white-space: normal !important;
+  line-height: 1.25 !important;
 }
 
 .admin-table td,
@@ -612,9 +623,11 @@ body:has(.dashboard-page) .bg-orb {
   overflow-wrap: anywhere !important;
 }
 
-.admin-table td:last-child,
-.super-table td:last-child {
-  border-bottom: 0 !important;
+/* Long subject names, emails and codes may break, but only between words: letting
+   the browser break anywhere collapses the columns into unreadable slivers. */
+.super-table td {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
 }
 
 .admin-table td strong,
@@ -634,15 +647,12 @@ body:has(.dashboard-page) .bg-orb {
   background: rgba(37, 99, 235, 0.03) !important;
 }
 
-.admin-table.wide,
-.super-table.wide {
+.admin-table.wide {
   table-layout: fixed !important;
 }
 
 .admin-table.wide th,
-.admin-table.wide td,
-.super-table.wide th,
-.super-table.wide td {
+.admin-table.wide td {
   overflow-wrap: break-word !important;
   word-break: break-word !important;
 }

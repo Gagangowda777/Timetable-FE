@@ -7,6 +7,66 @@ function formatDate(date, options) {
   return new Intl.DateTimeFormat('en', options).format(date)
 }
 
+// Used until the super admin's saved configuration loads (or when that endpoint
+// is unreachable), so the faculty forms are never empty.
+const DEFAULT_REQUEST_FORM_FIELDS = {
+  change: [
+    { key: 'scheduleId', label: 'Assigned class or lab', type: 'class', required: true },
+    { key: 'proposedChange', label: 'Requested change', type: 'textarea', required: true, placeholder: 'Describe the timetable change you need', maxLength: 1000 },
+    { key: 'reason', label: 'Reason', type: 'textarea', required: true, placeholder: 'Explain why this change is needed', maxLength: 1000 },
+  ],
+  leave: [
+    { key: 'leaveType', label: 'Leave type', type: 'select', required: true, options: ['Casual Leave', 'Sick Leave', 'Earned Leave', 'Other'] },
+    { key: 'startDate', label: 'From date', type: 'date', required: true },
+    { key: 'endDate', label: 'To date', type: 'date', required: true },
+    { key: 'reason', label: 'Reason', type: 'textarea', required: true, placeholder: 'Explain why you need this leave', maxLength: 1000 },
+  ],
+}
+
+function requestFieldControl(field, { classes = [] } = {}) {
+  const required = Boolean(field.required)
+  const placeholder = field.placeholder || undefined
+  switch (field.type) {
+    case 'class':
+      return (
+        <select name={field.key} defaultValue={classes[0]?.id ?? ''} required={required} disabled={!classes.length}>
+          {classes.map((item) => <option key={item.id} value={item.id}>{item.course} · {item.code} · {item.day} {item.start}</option>)}
+        </select>
+      )
+    case 'select':
+      return (
+        <select name={field.key} defaultValue={field.options?.[0] ?? ''} required={required}>
+          {(field.options || []).map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
+      )
+    case 'textarea':
+      return <textarea name={field.key} rows="2" maxLength={field.maxLength || 1000} placeholder={placeholder} required={required} />
+    case 'checkbox':
+      return <input type="checkbox" name={field.key} />
+    default:
+      return <input type={field.type || 'text'} name={field.key} placeholder={placeholder} maxLength={field.maxLength || undefined} required={required} />
+  }
+}
+
+function readRequestPayload(formElement, fields) {
+  const formData = new FormData(formElement)
+  const payload = {}
+  for (const field of fields) {
+    if (field.type === 'checkbox') {
+      payload[field.key] = formData.has(field.key)
+      continue
+    }
+    const value = formData.get(field.key)
+    if (value !== null && value !== '') payload[field.key] = value
+  }
+  return payload
+}
+
+function customFieldSummary(customFields) {
+  if (!Array.isArray(customFields) || !customFields.length) return ''
+  return customFields.map((entry) => `${entry.label}: ${entry.value}`).join(' · ')
+}
+
 function DashboardPage({ session, onSignOut }) {
   const [weekOffset, setWeekOffset] = useState(0)
   const [activeSection, setActiveSection] = useState('today')
@@ -23,6 +83,7 @@ function DashboardPage({ session, onSignOut }) {
   const [leaveRequestError, setLeaveRequestError] = useState('')
   const [leaveRequestNotice, setLeaveRequestNotice] = useState('')
   const [submittingLeaveRequest, setSubmittingLeaveRequest] = useState(false)
+  const [requestFormFields, setRequestFormFields] = useState(DEFAULT_REQUEST_FORM_FIELDS)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [reloadKey, setReloadKey] = useState(0)
@@ -83,6 +144,22 @@ function DashboardPage({ session, onSignOut }) {
   useEffect(() => {
     if (session.role !== 'faculty') return undefined
     let active = true
+    apiRequest('/dashboard/request-form-fields')
+      .then((result) => {
+        if (!active) return
+        setRequestFormFields({
+          change: result.change?.length ? result.change : DEFAULT_REQUEST_FORM_FIELDS.change,
+          leave: result.leave?.length ? result.leave : DEFAULT_REQUEST_FORM_FIELDS.leave,
+        })
+      })
+      // Keep the default layout when the configuration cannot be loaded.
+      .catch(() => {})
+    return () => { active = false }
+  }, [session.role])
+
+  useEffect(() => {
+    if (session.role !== 'faculty') return undefined
+    let active = true
     apiRequest('/dashboard/workload')
       .then((result) => { if (active) { setFacultyWorkload(result); setFacultyWorkloadError('') } })
       .catch((requestError) => { if (active) setFacultyWorkloadError(requestError.message) })
@@ -109,18 +186,13 @@ function DashboardPage({ session, onSignOut }) {
   async function submitChangeRequest(event) {
     event.preventDefault()
     const form = event.currentTarget
-    const formData = new FormData(form)
     setSubmittingChangeRequest(true)
     setChangeRequestError('')
     setChangeRequestNotice('')
     try {
       const created = await apiRequest('/dashboard/change-requests', {
         method: 'POST',
-        body: {
-          scheduleId: Number(formData.get('scheduleId')),
-          proposedChange: formData.get('proposedChange'),
-          reason: formData.get('reason'),
-        },
+        body: readRequestPayload(form, requestFormFields.change),
       })
       setChangeRequests((requests) => [created, ...requests])
       setChangeRequestNotice('Your timetable change request was submitted for review.')
@@ -135,19 +207,13 @@ function DashboardPage({ session, onSignOut }) {
   async function submitLeaveRequest(event) {
     event.preventDefault()
     const form = event.currentTarget
-    const formData = new FormData(form)
     setSubmittingLeaveRequest(true)
     setLeaveRequestError('')
     setLeaveRequestNotice('')
     try {
       const created = await apiRequest('/dashboard/leave-requests', {
         method: 'POST',
-        body: {
-          leaveType: formData.get('leaveType'),
-          startDate: formData.get('startDate'),
-          endDate: formData.get('endDate'),
-          reason: formData.get('reason'),
-        },
+        body: readRequestPayload(form, requestFormFields.leave),
       })
       setLeaveRequests((requests) => [created, ...requests])
       setLeaveRequestNotice('Your leave request was submitted for review.')
@@ -434,17 +500,12 @@ function DashboardPage({ session, onSignOut }) {
             {changeRequestError && <p className="notification-error" role="alert">{changeRequestError}</p>}
             {changeRequestNotice && <p className="change-request-notice" role="status">{changeRequestNotice}</p>}
             <form className="faculty-change-form" onSubmit={submitChangeRequest}>
-              <label><span className="request-field-label">Assigned class or lab<span className="request-required" aria-hidden="true">*</span></span>
-                <select name="scheduleId" defaultValue={weeklyClasses[0]?.id ?? ''} required disabled={!weeklyClasses.length}>
-                  {weeklyClasses.map((item) => <option key={item.id} value={item.id}>{item.course} · {item.code} · {item.day} {item.start}</option>)}
-                </select>
-              </label>
-              <label><span className="request-field-label">Requested change<span className="request-required" aria-hidden="true">*</span></span>
-                <textarea name="proposedChange" rows="2" maxLength="1000" placeholder="Describe the timetable change you need" required />
-              </label>
-              <label><span className="request-field-label">Reason<span className="request-required" aria-hidden="true">*</span></span>
-                <textarea name="reason" rows="2" maxLength="1000" placeholder="Explain why this change is needed" required />
-              </label>
+              {requestFormFields.change.map((field) => (
+                <label key={field.key}>
+                  <span className="request-field-label">{field.label}{field.required && <span className="request-required" aria-hidden="true">*</span>}</span>
+                  {requestFieldControl(field, { classes: weeklyClasses })}
+                </label>
+              ))}
               <button className="sign-out-button" type="submit" disabled={submittingChangeRequest || !weeklyClasses.length}>
                 {submittingChangeRequest ? 'Submitting...' : 'Submit request'}
               </button>
@@ -453,7 +514,12 @@ function DashboardPage({ session, onSignOut }) {
               <h3>Your requests</h3>
               {changeRequests.length ? changeRequests.map((item) => (
                 <article className="faculty-request-item" key={item.id}>
-                  <div><strong>{item.subject} · {item.code}</strong><p>{item.proposedChange}</p><small>{item.day} {item.start}-{item.end} · {item.reason}</small></div>
+                  <div>
+                    <strong>{item.subject} · {item.code}</strong>
+                    <p>{item.proposedChange}</p>
+                    <small>{[`${item.day} ${item.start}-${item.end}`, item.reason].filter(Boolean).join(' · ')}</small>
+                    {customFieldSummary(item.customFields) && <small>{customFieldSummary(item.customFields)}</small>}
+                  </div>
                   <span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span>
                 </article>
               )) : <p className="notification-empty">No timetable change requests yet.</p>}
@@ -469,23 +535,12 @@ function DashboardPage({ session, onSignOut }) {
             {leaveRequestError && <p className="notification-error" role="alert">{leaveRequestError}</p>}
             {leaveRequestNotice && <p className="change-request-notice" role="status">{leaveRequestNotice}</p>}
             <form className="faculty-leave-form" onSubmit={submitLeaveRequest}>
-              <label><span className="request-field-label">Leave type<span className="request-required" aria-hidden="true">*</span></span>
-                <select name="leaveType" defaultValue="Casual Leave" required>
-                  <option>Casual Leave</option>
-                  <option>Sick Leave</option>
-                  <option>Earned Leave</option>
-                  <option>Other</option>
-                </select>
-              </label>
-              <label><span className="request-field-label">From date<span className="request-required" aria-hidden="true">*</span></span>
-                <input type="date" name="startDate" required />
-              </label>
-              <label><span className="request-field-label">To date<span className="request-required" aria-hidden="true">*</span></span>
-                <input type="date" name="endDate" required />
-              </label>
-              <label><span className="request-field-label">Reason<span className="request-required" aria-hidden="true">*</span></span>
-                <textarea name="reason" rows="2" maxLength="1000" placeholder="Explain why you need this leave" required />
-              </label>
+              {requestFormFields.leave.map((field) => (
+                <label key={field.key}>
+                  <span className="request-field-label">{field.label}{field.required && <span className="request-required" aria-hidden="true">*</span>}</span>
+                  {requestFieldControl(field)}
+                </label>
+              ))}
               <button className="sign-out-button" type="submit" disabled={submittingLeaveRequest}>
                 {submittingLeaveRequest ? 'Submitting...' : 'Submit leave request'}
               </button>
@@ -496,8 +551,9 @@ function DashboardPage({ session, onSignOut }) {
                 <article className="faculty-request-item" key={item.id}>
                   <div>
                     <strong>{item.leaveType}</strong>
-                    <p>{item.startDate} to {item.endDate} · {item.numberOfDays === 1 ? '1 day' : `${item.numberOfDays} days`}</p>
-                    <small>{item.reason}</small>
+                    <p>{[item.startDate && item.endDate ? `${item.startDate} to ${item.endDate}` : '', item.numberOfDays ? (item.numberOfDays === 1 ? '1 day' : `${item.numberOfDays} days`) : ''].filter(Boolean).join(' · ')}</p>
+                    {item.reason && <small>{item.reason}</small>}
+                    {customFieldSummary(item.customFields) && <small>{customFieldSummary(item.customFields)}</small>}
                   </div>
                   <span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span>
                 </article>

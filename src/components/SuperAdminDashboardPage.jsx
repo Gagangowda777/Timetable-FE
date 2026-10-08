@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiRequest } from '../api.js'
 import FacultyManagementPage from './FacultyManagementPage.jsx'
+import RequestFormFieldsPage from './RequestFormFieldsPage.jsx'
 import './SuperAdminDashboardPage.css'
 
 const entityDefinitions = {
@@ -141,6 +142,7 @@ const navigationItems = [
   ['users', 'Users'],
   ['campuses', 'Campuses'],
   ['rooms', 'Rooms'],
+  ['request-forms', 'Request forms'],
   ['settings', 'System settings'],
   ['analytics', 'Analytics'],
   ['audit', 'Audit log'],
@@ -494,7 +496,7 @@ function SuperAdminDashboardPage({ session, onSignOut }) {
           </div>}
           <span>{visibleRecords.length} of {records[entity].length} records</span>
         </div>
-        <div className="super-table-scroll"><table className={`super-table${entity === 'subjects' ? ' wide' : ''}`}><colgroup>{entity === 'subjects' && <><col className="g-code" /><col className="g-wide" /><col className="g-medium" /><col className="g-year" /><col className="g-dept" /><col className="g-program" /><col className="g-batch" /><col className="g-semester" /><col className="g-credits" /><col className="g-hours" /><col className="g-theory" /><col className="g-practical" /><col className="g-faculty" /><col className="g-lab" /><col className="g-status" /><col className="g-actions" /></>}</colgroup><thead><tr>{definition.fields.map((field) => <th key={field.key}>{field.label}</th>)}<th>Status</th><th>Actions</th></tr></thead><tbody>
+        <div className="super-table-scroll"><table className="super-table"><thead><tr>{definition.fields.map((field) => <th key={field.key}>{field.label}</th>)}<th>Status</th><th>Actions</th></tr></thead><tbody>
           {visibleRecords.map((record) => <tr key={record.id}>{definition.fields.map((field) => <td key={field.key}>{field.displayKey ? record[field.displayKey] : Array.isArray(record[field.key]) ? record[field.key].join(', ') : record[field.key]}</td>)}<td><span className={`super-status-pill ${record.status === 'Active' ? 'is-active' : ''}`}>{record.status}</span></td><td><div className="record-actions"><button type="button" onClick={() => openEntityModal(entity, record)}>Edit</button><button type="button" onClick={() => toggleRecordStatus(entity, record)}>{record.status === 'Active' ? 'Deactivate' : 'Activate'}</button>{definition.deletable && <button type="button" onClick={() => deleteRecord(entity, record)}>Delete</button>}</div></td></tr>)}
           {visibleRecords.length === 0 && <tr><td className="super-no-results" colSpan={definition.fields.length + 2}>No matching records.</td></tr>}
         </tbody></table></div>
@@ -562,6 +564,7 @@ function SuperAdminDashboardPage({ session, onSignOut }) {
         {activeView === 'overview' && renderOverview()}
         {activeDefinition && renderEntityManager(activeView)}
         {activeView === 'faculty' && <FacultyManagementPage />}
+        {activeView === 'request-forms' && <RequestFormFieldsPage />}
         {activeView === 'settings' && renderSettings()}
         {activeView === 'analytics' && renderAnalytics()}
         {activeView === 'audit' && renderAuditLog()}

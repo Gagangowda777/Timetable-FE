@@ -309,14 +309,16 @@
 }
 
 .super-table-scroll {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   border-top: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .super-table {
   width: 100%;
-  min-width: 760px;
   border-collapse: collapse;
+  border-spacing: 0;
   text-align: left;
 }
 
@@ -360,6 +362,10 @@
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+.record-actions button {
+  white-space: nowrap;
 }
 
 .record-actions button,
@@ -534,24 +540,28 @@
   .analytics-bar-row {
     grid-template-columns: 7rem minmax(0, 1fr) 1.5rem;
   }
-}.super-table-scroll {
-  width: 100%;
-  overflow-x: visible;
-  border-top: 1px solid var(--super-line);
 }
 
 /* Simple responsive data table — auto layout so columns size to their content and stay readable. */
+.super-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-top: 1px solid var(--super-line);
+}
+
 .super-table {
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
+  border-spacing: 0;
   text-align: left;
 }
 
 .super-table th,
 .super-table td {
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  word-break: normal;
+  overflow-wrap: break-word;
   hyphens: auto;
 }
 
@@ -605,97 +615,9 @@
   background: rgba(37, 99, 235, 0.03);
 }
 
-/* Very wide tables (e.g. Subjects with 15 columns): fixed layout + per-column min-widths so headers stay readable and the table stays within the panel on this dashboard's content width. */
-.super-table.wide {
-  table-layout: fixed;
-}
-
-.super-table.wide th,
-.super-table.wide td {
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-.super-table.wide col.g-wide {
-  width: 9%;
-  min-width: 64px;
-}
-
-.super-table.wide col.g-medium {
-  width: 7%;
-  min-width: 54px;
-}
-
-.super-table.wide col.g-code {
-  width: 7%;
-  min-width: 54px;
-}
-
-.super-table.wide col.g-year {
-  width: 8%;
-  min-width: 60px;
-}
-
-.super-table.wide col.g-dept {
-  width: 9%;
-  min-width: 68px;
-}
-
-.super-table.wide col.g-program {
-  width: 9%;
-  min-width: 68px;
-}
-
-.super-table.wide col.g-batch {
-  width: 8%;
-  min-width: 56px;
-}
-
-.super-table.wide col.g-semester {
-  width: 9%;
-  min-width: 64px;
-}
-
-.super-table.wide col.g-credits {
-  width: 5.5%;
-  min-width: 44px;
-}
-
-.super-table.wide col.g-hours {
-  width: 6.5%;
-  min-width: 52px;
-}
-
-.super-table.wide col.g-theory {
-  width: 6.5%;
-  min-width: 52px;
-}
-
-.super-table.wide col.g-practical {
-  width: 7%;
-  min-width: 56px;
-}
-
-.super-table.wide col.g-faculty {
-  width: 8%;
-  min-width: 64px;
-}
-
-.super-table.wide col.g-lab {
-  width: 5%;
-  min-width: 40px;
-}
-
-.super-table.wide col.g-status {
-  width: 7%;
-  min-width: 56px;
-}
-
-.super-table.wide col.g-actions {
-  width: 6%;
-  min-width: 52px;
-}
-
+/* Wide tables (e.g. Subjects with 15 columns) use the browser's automatic table
+   layout so columns size to their content; the scroll wrapper above keeps any
+   overflow inside the panel instead of bleeding across the page. */
 .super-table caption {
   caption-side: bottom;
   padding: 0.7rem 0.9rem;
