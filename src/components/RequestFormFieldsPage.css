@@ -102,7 +102,9 @@
   align-items: end;
 }
 
-.request-field-label {
+/* Scoped to this panel: the faculty dashboards use the same class name for their
+   own field labels, so an unscoped rule here would restyle those forms too. */
+.request-forms-panel .request-field-label {
   display: grid;
   gap: 0.3rem;
   color: var(--text-muted);
@@ -112,8 +114,8 @@
   text-transform: uppercase;
 }
 
-.request-field-label input,
-.request-field-label select {
+.request-forms-panel .request-field-label input,
+.request-forms-panel .request-field-label select {
   min-height: 2.4rem;
   padding: 0 0.6rem;
   border: 1px solid var(--surface-border);
@@ -127,8 +129,8 @@
   text-transform: none;
 }
 
-.request-field-label input:disabled,
-.request-field-label select:disabled {
+.request-forms-panel .request-field-label input:disabled,
+.request-forms-panel .request-field-label select:disabled {
   background: var(--bg-mesh);
   color: var(--text-muted);
 }

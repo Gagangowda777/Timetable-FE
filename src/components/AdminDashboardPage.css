@@ -58,7 +58,7 @@
   font-size: 0.9rem;
 }
 
-.admin-demo-badge {
+.admin-live-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -608,6 +608,15 @@
   gap: 7px;
 }
 
+/* Super-admin answers collected on a request sit on their own line under the
+   text the faculty member typed. */
+.request-custom-answer {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-subtle);
+  font-size: 0.72rem;
+}
+
 .request-review-actions button {
   padding: 5px 7px;
   border: 1px solid var(--surface-border);
@@ -919,7 +928,7 @@
     font-size: 31px;
   }
 
-  .admin-demo-badge {
+  .admin-live-badge {
     margin-top: 18px;
     font-size: 8px;
   }
@@ -980,7 +989,7 @@
     gap: 9px;
   }
 
-  .admin-demo-badge {
+  .admin-live-badge {
     margin-top: 0;
   }
 

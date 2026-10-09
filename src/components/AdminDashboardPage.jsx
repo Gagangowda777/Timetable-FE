@@ -23,6 +23,18 @@ function calendarFingerprint(days, slots) {
   })
 }
 
+function formatLeaveRange(startDate, endDate) {
+  if (!startDate || !endDate) return '—'
+  const format = (value) => new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' })
+    .format(new Date(`${value}T12:00:00`))
+  return `${format(startDate)} – ${format(endDate)}`
+}
+
+function customAnswerSummary(customFields) {
+  if (!Array.isArray(customFields) || !customFields.length) return ''
+  return customFields.map((entry) => `${entry.label}: ${entry.value}`).join(' · ')
+}
+
 function AdminDashboardPage({ session, onSignOut }) {
   const isAcademicAdmin = session.role === 'academic-admin'
   const roleLabel = isAcademicAdmin ? 'Academic Admin' : 'Department Admin'
@@ -43,6 +55,7 @@ function AdminDashboardPage({ session, onSignOut }) {
   const [workingDays, setWorkingDays] = useState([])
   const [timeSlots, setTimeSlots] = useState([])
   const [changeRequests, setChangeRequests] = useState([])
+  const [leaveRequests, setLeaveRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [reloadKey, setReloadKey] = useState(0)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
@@ -77,6 +90,9 @@ function AdminDashboardPage({ session, onSignOut }) {
     apiRequest('/admin/change-requests')
       .then((result) => { if (active) setChangeRequests(result) })
       .catch((error) => { if (active) setNotice(error.message) })
+    apiRequest('/admin/leave-requests')
+      .then((result) => { if (active) setLeaveRequests(result) })
+      .catch((error) => { if (active) setNotice(error.message) })
 
     return () => { active = false }
   }, [reloadKey])
@@ -97,8 +113,8 @@ function AdminDashboardPage({ session, onSignOut }) {
   }
 
   const tabs = isAcademicAdmin
-    ? [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['schedules', 'Schedules'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Change requests'], ['settings', 'Working hours']]
-    : [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['timetable', 'Timetable'], ['faculty', 'Faculty'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Change requests']]
+    ? [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['schedules', 'Schedules'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Faculty requests'], ['settings', 'Working hours']]
+    : [['overview', 'Overview'], ['manual-timetable', 'Manual timetable'], ['timetable', 'Timetable'], ['faculty', 'Faculty'], ['faculty-workload', 'Faculty workload'], ['conflicts', 'Conflicts'], ['approvals', 'Approvals'], ['change-requests', 'Faculty requests']]
   const visibleSchedules = schedules.filter((item) => {
     if (isAcademicAdmin) return scheduleFilter === 'All departments' || item.department === scheduleFilter
     return item.department === department
@@ -109,6 +125,8 @@ function AdminDashboardPage({ session, onSignOut }) {
   const pendingSchedules = visibleSchedules.filter((item) => item.status === 'Awaiting approval')
   const openConflicts = visibleConflicts.filter((item) => item.status === 'Open')
   const pendingChangeRequests = changeRequests.filter((item) => item.status === 'Pending')
+  const pendingLeaveRequests = leaveRequests.filter((item) => item.status === 'Pending')
+  const pendingRequests = pendingChangeRequests.length + pendingLeaveRequests.length
   const visibleFaculty = faculty.filter((item) => isAcademicAdmin || item.department === department)
   const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' })
   const filteredSchedules = visibleSchedules.filter((item) => {
@@ -203,6 +221,16 @@ function AdminDashboardPage({ session, onSignOut }) {
     try {
       await apiRequest(`/admin/change-requests/${id}`, { method: 'PATCH', body: { status } })
       setNotice(`Timetable change request ${status.toLowerCase()}.`)
+      setReloadKey((key) => key + 1)
+    } catch (error) {
+      setNotice(error.message)
+    }
+  }
+
+  async function reviewLeaveRequest(id, status) {
+    try {
+      await apiRequest(`/admin/leave-requests/${id}`, { method: 'PATCH', body: { status } })
+      setNotice(`Faculty leave request ${status.toLowerCase()}.`)
       setReloadKey((key) => key + 1)
     } catch (error) {
       setNotice(error.message)
@@ -464,7 +492,7 @@ function AdminDashboardPage({ session, onSignOut }) {
             <>
               <button type="button" onClick={() => setActiveView('conflicts')}><span>01</span><strong>Resolve conflicts</strong><small>{openConflicts.length} open items</small></button>
               <button type="button" onClick={() => setActiveView('settings')}><span>02</span><strong>Configure working hours</strong><small>{workingDays.length} active days · {timeSlots.length} time slots</small></button>
-              <button type="button" onClick={() => setActiveView('change-requests')}><span>03</span><strong>Review change requests</strong><small>{pendingChangeRequests.length} pending requests</small></button>
+              <button type="button" onClick={() => setActiveView('change-requests')}><span>03</span><strong>Review faculty requests</strong><small>{pendingRequests} pending requests</small></button>
             </>
           ) : (
             <>
@@ -593,24 +621,44 @@ function AdminDashboardPage({ session, onSignOut }) {
 
   function renderChangeRequests() {
     return (
-      <section className="admin-panel">
-        <div className="admin-panel-heading"><div><p className="admin-kicker">FACULTY SCHEDULE SUPPORT</p><h2>Timetable change requests</h2><p>Review requested changes to assigned classes and labs.</p></div><span className="request-count">{pendingChangeRequests.length} pending</span></div>
-        {changeRequests.length ? (
-          <div className="admin-table-scroll"><table className="admin-table change-request-table"><thead><tr><th>Faculty member</th><th>Assigned class</th><th>Current time</th><th>Requested change</th><th>Reason</th><th>Status</th><th>Review</th></tr></thead><tbody>
-            {changeRequests.map((item) => (
-              <tr key={item.id}>
-                <td><strong>{item.facultyName}</strong></td>
-                <td><strong>{item.subject}</strong><span>{item.code}</span></td>
-                <td>{item.day}<span>{item.start}–{item.end}</span></td>
-                <td className="change-request-copy">{item.proposedChange}</td>
-                <td className="change-request-copy">{item.reason}</td>
-                <td><span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span></td>
-                <td>{item.status === 'Pending' ? <div className="request-review-actions"><button type="button" onClick={() => reviewChangeRequest(item.id, 'Approved')}>Approve</button><button type="button" onClick={() => reviewChangeRequest(item.id, 'Declined')}>Decline</button></div> : item.reviewedBy || 'Reviewed'}</td>
-              </tr>
-            ))}
-          </tbody></table></div>
-        ) : <div className="admin-empty-state">No faculty change requests have been submitted.</div>}
-      </section>
+      <>
+        <section className="admin-panel">
+          <div className="admin-panel-heading"><div><p className="admin-kicker">FACULTY SCHEDULE SUPPORT</p><h2>Timetable change requests</h2><p>Review requested changes to assigned classes and labs.</p></div><span className="request-count">{pendingChangeRequests.length} pending</span></div>
+          {changeRequests.length ? (
+            <div className="admin-table-scroll"><table className="admin-table change-request-table"><thead><tr><th>Faculty member</th><th>Assigned class</th><th>Current time</th><th>Requested change</th><th>Reason</th><th>Status</th><th>Review</th></tr></thead><tbody>
+              {changeRequests.map((item) => (
+                <tr key={item.id}>
+                  <td><strong>{item.facultyName}</strong></td>
+                  <td><strong>{item.subject}</strong><span>{item.code}</span></td>
+                  <td><strong>{item.day}</strong><span>{item.start}–{item.end}</span></td>
+                  <td className="change-request-copy">{item.proposedChange}{customAnswerSummary(item.customFields) && <span className="request-custom-answer">{customAnswerSummary(item.customFields)}</span>}</td>
+                  <td className="change-request-copy">{item.reason}</td>
+                  <td><span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span></td>
+                  <td>{item.status === 'Pending' ? <div className="request-review-actions"><button type="button" onClick={() => reviewChangeRequest(item.id, 'Approved')}>Approve</button><button type="button" onClick={() => reviewChangeRequest(item.id, 'Declined')}>Decline</button></div> : item.reviewedBy || 'Reviewed'}</td>
+                </tr>
+              ))}
+            </tbody></table></div>
+          ) : <div className="admin-empty-state">No faculty change requests have been submitted.</div>}
+        </section>
+
+        <section className="admin-panel">
+          <div className="admin-panel-heading"><div><p className="admin-kicker">FACULTY LEAVE SUPPORT</p><h2>Faculty leave requests</h2><p>Approve or decline leave requested by your teaching staff.</p></div><span className="request-count">{pendingLeaveRequests.length} pending</span></div>
+          {leaveRequests.length ? (
+            <div className="admin-table-scroll"><table className="admin-table change-request-table"><thead><tr><th>Faculty member</th><th>Leave type</th><th>Dates</th><th>Reason</th><th>Status</th><th>Review</th></tr></thead><tbody>
+              {leaveRequests.map((item) => (
+                <tr key={item.id}>
+                  <td><strong>{item.facultyName}</strong></td>
+                  <td>{item.leaveType}</td>
+                  <td><strong>{formatLeaveRange(item.startDate, item.endDate)}</strong>{item.numberOfDays > 0 && <span>{item.numberOfDays === 1 ? '1 day' : `${item.numberOfDays} days`}</span>}</td>
+                  <td className="change-request-copy">{item.reason}{customAnswerSummary(item.customFields) && <span className="request-custom-answer">{customAnswerSummary(item.customFields)}</span>}</td>
+                  <td><span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span></td>
+                  <td>{item.status === 'Pending' ? <div className="request-review-actions"><button type="button" onClick={() => reviewLeaveRequest(item.id, 'Approved')}>Approve</button><button type="button" onClick={() => reviewLeaveRequest(item.id, 'Declined')}>Decline</button></div> : item.reviewedBy || 'Reviewed'}</td>
+                </tr>
+              ))}
+            </tbody></table></div>
+          ) : <div className="admin-empty-state">No faculty leave requests have been submitted.</div>}
+        </section>
+      </>
     )
   }
 
@@ -734,8 +782,8 @@ function AdminDashboardPage({ session, onSignOut }) {
         <div className="dashboard-account"><div className="account-copy"><span>{roleLabel}</span><strong>{session.identity}</strong></div><button className="sign-out-button" type="button" onClick={onSignOut}>Sign out</button></div>
       </header>
       <div className="admin-dashboard-content" id="admin-dashboard">
-        <section className="admin-welcome"><div><p className="admin-kicker">SCHEDULING WORKSPACE · {roleLabel.toUpperCase()}</p><h1>{isAcademicAdmin ? 'Institution scheduling' : 'Department scheduling'}</h1><p>{isAcademicAdmin ? 'Coordinate schedules, standards, and approvals across departments.' : 'Build and review your department’s teaching timetable.'}</p></div><span className="admin-demo-badge">LIVE WORKSPACE</span></section>
-        <nav className="admin-tabs" aria-label="Admin dashboard sections">{tabs.map(([id, label]) => <button className={activeView === id ? 'is-active' : ''} type="button" key={id} aria-current={activeView === id ? 'page' : undefined} onClick={() => { setActiveView(id); setNotice('') }}>{label}{id === 'conflicts' && openConflicts.length > 0 && <span>{openConflicts.length}</span>}{id === 'change-requests' && pendingChangeRequests.length > 0 && <span>{pendingChangeRequests.length}</span>}</button>)}</nav>
+        <section className="admin-welcome"><div><p className="admin-kicker">SCHEDULING WORKSPACE · {roleLabel.toUpperCase()}</p><h1>{isAcademicAdmin ? 'Institution scheduling' : 'Department scheduling'}</h1><p>{isAcademicAdmin ? 'Coordinate schedules, standards, and approvals across departments.' : 'Build and review your department’s teaching timetable.'}</p></div><span className="admin-live-badge">LIVE WORKSPACE</span></section>
+        <nav className="admin-tabs" aria-label="Admin dashboard sections">{tabs.map(([id, label]) => <button className={activeView === id ? 'is-active' : ''} type="button" key={id} aria-current={activeView === id ? 'page' : undefined} onClick={() => { setActiveView(id); setNotice('') }}>{label}{id === 'conflicts' && openConflicts.length > 0 && <span>{openConflicts.length}</span>}{id === 'change-requests' && pendingRequests > 0 && <span>{pendingRequests}</span>}</button>)}</nav>
         {notice && <p className="admin-notice" role="status">{notice}</p>}
         {activeView === 'overview' && renderOverview()}
         {activeView === 'manual-timetable' && <ManualTimetablePage session={session} />}

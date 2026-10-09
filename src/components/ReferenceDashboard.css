@@ -226,8 +226,8 @@ body:has(.dashboard-page) .bg-orb {
   font-size: 13px !important;
 }
 
-.demo-badge,
-.admin-demo-badge,
+.live-badge,
+.admin-live-badge,
 .super-admin-badge {
   align-self: flex-start;
   margin: 12px 0 0;
@@ -242,7 +242,7 @@ body:has(.dashboard-page) .bg-orb {
   letter-spacing: 1px !important;
 }
 
-.demo-badge i {
+.live-badge i {
   display: inline-block;
   width: 6px;
   height: 6px;
@@ -619,16 +619,13 @@ body:has(.dashboard-page) .bg-orb {
   font-size: 0.8rem !important;
   vertical-align: middle !important;
   line-height: 1.4 !important;
-  word-break: break-word !important;
-  overflow-wrap: anywhere !important;
-}
-
-/* Long subject names, emails and codes may break, but only between words: letting
-   the browser break anywhere collapses the columns into unreadable slivers. */
-.super-table td {
   word-break: normal !important;
   overflow-wrap: break-word !important;
 }
+
+/* Long subject names, emails and codes may break, but only between words: breaking
+   anywhere lets the browser split single words and status labels in half
+   ("PEN DING") as soon as a column is narrow. */
 
 .admin-table td strong,
 .super-table td strong {

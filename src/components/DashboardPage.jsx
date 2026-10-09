@@ -62,6 +62,12 @@ function readRequestPayload(formElement, fields) {
   return payload
 }
 
+function formatDayRange(startDate, endDate) {
+  if (!startDate || !endDate) return ''
+  const format = (value) => formatDate(new Date(`${value}T12:00:00`), { month: 'short', day: 'numeric', year: 'numeric' })
+  return `${format(startDate)} – ${format(endDate)}`
+}
+
 function customFieldSummary(customFields) {
   if (!Array.isArray(customFields) || !customFields.length) return ''
   return customFields.map((entry) => `${entry.label}: ${entry.value}`).join(' · ')
@@ -275,7 +281,7 @@ function DashboardPage({ session, onSignOut }) {
               </p>
             )}
           </div>
-          <span className="demo-badge"><i /> LIVE TIMETABLE</span>
+          <span className="live-badge"><i /> LIVE TIMETABLE</span>
         </section>
 
         <section className="dashboard-stats" aria-label="Timetable summary">
@@ -517,7 +523,7 @@ function DashboardPage({ session, onSignOut }) {
                   <div>
                     <strong>{item.subject} · {item.code}</strong>
                     <p>{item.proposedChange}</p>
-                    <small>{[`${item.day} ${item.start}-${item.end}`, item.reason].filter(Boolean).join(' · ')}</small>
+                    <small>{[`${item.day} ${item.start}–${item.end}`, item.reason].filter(Boolean).join(' · ')}</small>
                     {customFieldSummary(item.customFields) && <small>{customFieldSummary(item.customFields)}</small>}
                   </div>
                   <span className={`request-status is-${item.status.toLowerCase()}`}>{item.status}</span>
@@ -551,7 +557,7 @@ function DashboardPage({ session, onSignOut }) {
                 <article className="faculty-request-item" key={item.id}>
                   <div>
                     <strong>{item.leaveType}</strong>
-                    <p>{[item.startDate && item.endDate ? `${item.startDate} to ${item.endDate}` : '', item.numberOfDays ? (item.numberOfDays === 1 ? '1 day' : `${item.numberOfDays} days`) : ''].filter(Boolean).join(' · ')}</p>
+                    <p>{[formatDayRange(item.startDate, item.endDate), item.numberOfDays ? (item.numberOfDays === 1 ? '1 day' : `${item.numberOfDays} days`) : ''].filter(Boolean).join(' · ')}</p>
                     {item.reason && <small>{item.reason}</small>}
                     {customFieldSummary(item.customFields) && <small>{customFieldSummary(item.customFields)}</small>}
                   </div>

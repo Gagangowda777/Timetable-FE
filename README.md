@@ -1,16 +1,55 @@
-# React + Vite
+# Timetable Allocation & Management — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + Vite single-page app for the Timetable Allocation & Management system. It talks to
+the Express/MongoDB API in `../../backend` and renders a different workspace per role.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Vite serves the app on `http://localhost:5174` and proxies `/api` requests to the API on
+`http://localhost:4000`, so start the backend first (see the repository root README).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Set `VITE_API_BASE_URL` to point the app at a different API origin. When it is unset, requests
+go to `/api` on the same origin and rely on the dev proxy (or on the rewrites in
+`vercel.json` in production).
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Command           | Purpose                          |
+| ----------------- | -------------------------------- |
+| `npm run dev`     | Start the dev server with HMR     |
+| `npm run build`   | Produce a production build in `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint`    | Run ESLint over the project       |
+
+## Workspaces
+
+| Route              | Role             | Screens                                                        |
+| ------------------ | ---------------- | -------------------------------------------------------------- |
+| `/student`         | Student          | Today, weekly timetable, change notifications                  |
+| `/faculty`         | Faculty          | Timetable, workload, request changes, request leave            |
+| `/department-admin`| Department Admin | Department timetable, manual builder, faculty, workload, conflicts, approvals, change requests |
+| `/academic-admin`  | Academic Admin   | Institution-wide schedules, standards, working hours, approvals |
+| `/super-admin`     | Super Admin      | Directory records, faculty management, analytics, audit, request form fields, settings |
+
+## Layout
+
+```
+src/
+  api.js                       fetch wrapper, token storage, error normalisation
+  index.css                    global theme tokens and shared primitives
+  App.jsx                      routes, session restore, role guards
+  components/
+    LoginPage.*                sign in
+    DashboardPage.*            student and faculty workspace
+    AdminDashboardPage.*       department and academic admin workspace
+    ManualTimetablePage.*      manual timetable builder
+    SuperAdminDashboardPage.*  system administration workspace
+    FacultyManagementPage.*    faculty directory and availability
+    RequestFormFieldsPage.*    super admin editor for request form fields
+    ReferenceDashboard.css     shared dashboard chrome
+```

@@ -735,7 +735,9 @@
   border-color: rgba(37, 99, 235, 0.3);
 }
 
-.settings-panel {
+/* Only the super admin settings panel drops its bottom padding; the admin
+   working-hours panel keeps the shared default. */
+.super-panel.settings-panel {
   padding: 0;
 }
 
